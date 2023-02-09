@@ -35,8 +35,5 @@ void setup() {
 }
 
 void loop() {
-    M2.mover(50);
-    delay(3000);
-    M2.mover(-50);
-    delay(3000);
+    movimientos();
 }
