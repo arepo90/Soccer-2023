@@ -1,57 +1,61 @@
+/*
+    Main movement functions
+*/
+
 void alto(){
-    M1.mover(0);
-    M2.mover(0);
-    M3.mover(0);
-    M4.mover(0);
+    M1.move(0);
+    M2.move(0);
+    M3.move(0);
+    M4.move(0);
 }
 
 void ade(){
-    M1.mover(POWER);
-    M2.mover(-POWER);
-    M3.mover(-POWER);
-    M4.mover(POWER);
+    M1.move(POWER);
+    M2.move(-POWER);
+    M3.move(-POWER);
+    M4.move(POWER);
 }
 
 void atras(){
-    M1.mover(-POWER);
-    M2.mover(POWER);
-    M3.mover(POWER);
-    M4.mover(-POWER);
+    M1.move(-POWER);
+    M2.move(POWER);
+    M3.move(POWER);
+    M4.move(-POWER);
 }
 
 void izq(){
-    M1.mover(-POWER);
-    M2.mover(-POWER);
-    M3.mover(POWER);
-    M4.mover(POWER);
+    M1.move(-POWER);
+    M2.move(-POWER);
+    M3.move(POWER);
+    M4.move(POWER);
 }
 
 void der(){
-    M1.mover(POWER);
-    M2.mover(POWER);
-    M3.mover(-POWER);
-    M4.mover(-POWER);
+    M1.move(POWER);
+    M2.move(POWER);
+    M3.move(-POWER);
+    M4.move(-POWER);
 }
 
 void diag_der(){
-    M1.mover(0);
-    M2.mover(POWER);
-    M3.mover(0);
-    M4.mover(-POWER);
+    M1.move(0);
+    M2.move(POWER);
+    M3.move(0);
+    M4.move(-POWER);
 }
 
 void diag_izq(){
-    M1.mover(-POWER);
-    M2.mover(0);
-    M3.mover(POWER);
-    M4.mover(0);
+    M1.move(-POWER);
+    M2.move(0);
+    M3.move(POWER);
+    M4.move(0);
 }
 
 void rotate(int n){
-    M1.mover(n);
-    M2.mover(n);
-    M3.mover(n);
-    M4.mover(n);
+    M1.move(n);
+    M2.move(n);
+    M3.move(n);
+    M4.move(n);
 }
 
 void movimientos(){
