@@ -68,20 +68,20 @@ void rotate(int n){
 }
 
 void movimientos(){
-    ade();
+    rig();
     delay(1000);
-    alto();
+    stop();
     delay(100);
-    atras();
+    bwd();
     delay(1000);
-    alto();
+    stop();
     delay(100);
-    izq();
+    lef();
     delay(1000);
-    alto();
+    stop();
     delay(100);
-    der();
+    fwd();
     delay(1000);
-    alto();
+    stop();
     delay(100);
 }

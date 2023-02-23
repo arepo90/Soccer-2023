@@ -1,5 +1,24 @@
 #include "Arduino.h"
 #include "defs.h"
+#include <EEPROM.h>
+
+//Save 4-byte number to EEPROM at target slots (0-indexed)
+void memSave(int n, int target){
+    for(int i = 4*target; i < 4*(target+1); i++){
+        EEPROM.update(i, (n >= 255 ? 255 : n));
+        if(n >= 255) n -= 255;
+        else n = 0;
+    }
+}
+
+//Read 4-byte number from EEPROM target slots (0-indexed)
+int memRead(int target){
+    int ans = 0;
+    for(int i = 4*target; i < 4*(target+1); i++){
+        ans += EEPROM.read(i);
+    }
+    return ans;
+}
 
 //Setup and pin declaration
 Motor::Motor(int id, int EN, int PWM_A, int PWM_B){
@@ -60,7 +79,7 @@ void Light::setLim(int LIM_A, int LIM_B){
 //Debug info in serial monitor
 void Light::debug(){
     Serial.print(" Light");
-    Serial.print(id)
+    Serial.print(id);
     Serial.print(": ");
     Serial.print(this->read());
     Serial.print(" L_A: ");

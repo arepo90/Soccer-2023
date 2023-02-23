@@ -2,6 +2,9 @@
 #define defs_h
 #include "Arduino.h"
 
+void memSave(int n, int target);
+int memRead(int target);
+
 //Motor class
 class Motor{
     private:
