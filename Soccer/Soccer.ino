@@ -1,5 +1,5 @@
 /*
-    Main code v0.3 - 20/02/2023 - Soccer 2023
+    Main code v0.4 - 23/02/2023 - Soccer 2023
     Esteban Martinez
 
     TODO: Compass, IR Seeker, Specific functions (Game Plan)
@@ -51,18 +51,18 @@
 //HiTechnic Compass Sensor
 const int compAddress = 0x01;
 
-Motor M1(1, EN_1, PWM_A1, PWM_B1);
-Motor M2(2, EN_2, PWM_A2, PWM_B2);
-Motor M3(3, EN_3, PWM_A3, PWM_B3);
-Motor M4(4, EN_4, PWM_A4, PWM_B4);
+Motor M1(0, EN_1, PWM_A1, PWM_B1);
+Motor M2(1, EN_2, PWM_A2, PWM_B2);
+Motor M3(2, EN_3, PWM_A3, PWM_B3);
+Motor M4(3, EN_4, PWM_A4, PWM_B4);
 
-Light L1(1, LUZ_A1, LUZ_B1);
-Light L2(2, LUZ_A2, LUZ_B2);
-Light L3(3, LUZ_A3, LUZ_B3);
-Light L4(4, LUZ_A4, LUZ_B4);
+Light L1(0, LUZ_A1, LUZ_B1);
+Light L2(1, LUZ_A2, LUZ_B2);
+Light L3(2, LUZ_A3, LUZ_B3);
+Light L4(3, LUZ_A4, LUZ_B4);
 
-Ultrasonic U1(1, US_T1, US_E1);
-Ultrasonic U2(2, US_T2, US_E2);
+Ultrasonic U1(0, US_T1, US_E1);
+Ultrasonic U2(1, US_T2, US_E2);
 
 void setup(){
     Serial.begin(9600);

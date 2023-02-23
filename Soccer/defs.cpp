@@ -13,10 +13,18 @@ Motor::Motor(int id, int EN, int PWM_A, int PWM_B){
 }
 
 //Set motor power (-255 -> 255)
-void Motor::move(int pow){
+void Motor::move(int POW){
+    this->POW = POW;
     digitalWrite(EN, HIGH);
-    analogWrite(PWM_A, (pow < 0 ? 0 : pow));
-    analogWrite(PWM_B, (pow < 0 ? pow : 0));
+    analogWrite(PWM_A, (POW < 0 ? 0 : POW));
+    analogWrite(PWM_B, (POW < 0 ? POW : 0));
+}
+
+void Motor::debug(){
+    Serial.print(" M");
+    Serial.print(id);
+    Serial.print(": ");
+    Serial.print(POW);
 }
 
 //Setup and pin declaration
@@ -24,6 +32,8 @@ Light::Light(int id, int PIN_A, int PIN_B){
     this->id = id;
     this->PIN_A = PIN_A;
     this->PIN_B = PIN_B;
+    this->LIM_A = memRead(id*2);
+    this->LIM_B = memRead((id*2)+1);
     pinMode(PIN_A, INPUT);
     pinMode(PIN_B, INPUT);
 }
@@ -43,6 +53,8 @@ int Light::read(){
 void Light::setLim(int LIM_A, int LIM_B){
     this->LIM_A = LIM_A;
     this->LIM_B = LIM_B;
+    memSave(LIM_A, 2*id);
+    memSave(LIM_B, (2*id)+1);
 }
 
 //Debug info in serial monitor

@@ -8,10 +8,12 @@ class Motor{
         int EN;
         int PWM_A;
         int PWM_B;
+        int POW = 0;
         int id;
     public:
         Motor(int id, int EN, int PWM_A, int PWM_B);
-        void move(int pow);
+        void move(int POW);
+        void debug();
 };
 
 //Light sensors class
@@ -24,9 +26,9 @@ class Light{
         int id;
     public:
         Light(int id, int PIN_A, int PIN_B);
+        int read();
         void setLim(int LIM_A, int LIM_B);
         void debug();
-        int read();
 };
 
 //Ultrasonic sensors class
@@ -39,8 +41,8 @@ class Ultrasonic{
         unsigned long prevMicros;
     public:
         Ultrasonic(int id, int TRIG, int ECHO, unsigned long timeOut = 20000UL);
-        void debug();
         int read();
+        void debug();
 };
 
 /*Compass sensor class - Not implemented yet
