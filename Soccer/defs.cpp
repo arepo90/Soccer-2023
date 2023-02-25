@@ -1,6 +1,11 @@
+/*
+    Source code for hardware classes and general functions-
+*/
+
 #include "Arduino.h"
 #include "defs.h"
 #include <EEPROM.h>
+#include <Wire.h>
 
 //Save 4-byte number to EEPROM at target slots (0-indexed)
 void memSave(int n, int target){
@@ -47,12 +52,14 @@ void Motor::debug(){
 }
 
 //Setup and pin declaration
-Light::Light(int id, int PIN_A, int PIN_B){
+Light::Light(int id, int PIN_A, int PIN_B, bool check){
     this->id = id;
     this->PIN_A = PIN_A;
     this->PIN_B = PIN_B;
-    this->LIM_A = memRead(id*2);
-    this->LIM_B = memRead((id*2)+1);
+    if(check){
+        LIM_A = memRead(id*2);
+        LIM_B = memRead((id*2)+1);
+    }
     pinMode(PIN_A, INPUT);
     pinMode(PIN_B, INPUT);
 }
@@ -118,5 +125,86 @@ void Ultrasonic::debug(){
     Serial.print(" US");
     Serial.print(id);
     Serial.print(": ");
+    Serial.print(this->read());
+}
+
+Compass::Compass(int id, int C1, int C2){
+    this->id = id;
+    ADDRESS = C1;
+    MSG = C2;
+    Wire.begin();
+    Wire.beginTransmission(ADDRESS);
+    Wire.write(0x00);
+    Wire.endTransmission();
+    while(Wire.available() > 0){
+        Wire.read();
+    }
+
+    byte buffer[2];
+    Wire.beginTransmission(ADDRESS);
+    Wire.write(MSG);
+    Wire.endTransmission();
+    Wire.requestFrom(ADDRESS, 2); 
+    while(Wire.available() < 2);
+    for(byte i = 0; i < 2; i++){
+        buffer[i] = Wire.read();
+    }
+    OFFSET = word(buffer[0], buffer[1]);
+    if(OFFSET < 0) OFFSET += 360;
+}
+
+int Compass::read(){
+    byte buffer[2];
+    Wire.beginTransmission(ADDRESS);
+    Wire.write(MSG);
+    Wire.endTransmission();
+    Wire.requestFrom(ADDRESS, 2); 
+    while(Wire.available() < 2);
+    for(byte i = 0; i < 2; i++){
+        buffer[i] = Wire.read();
+    }
+    int angle = word(buffer[0], buffer[1]);
+    if(angle < 0) angle += 360;
+    angle -= OFFSET;
+    if(angle < 0) angle += 360;
+    return angle;
+}
+
+void Compass::debug(){
+    Serial.print(" COMPASS: ");
+    Serial.print(this->read());
+}
+
+IRSeeker::IRSeeker(int id, int IR1, int IR2){
+    this->id = id;
+    ADDRESS = IR1;
+    MSG = IR2;
+    Wire.begin();
+    Wire.beginTransmission(ADDRESS);
+    Wire.write(0x00);
+    Wire.endTransmission();
+    while(Wire.available() > 0){
+        Wire.read();
+    }
+}
+
+int IRSeeker::read(){
+    byte buffer[6];
+    Wire.beginTransmission(ADDRESS);
+    Wire.write(MSG);
+    Wire.endTransmission();
+    Wire.requestFrom(ADDRESS, 6);
+    while(Wire.available() < 6);
+    for(byte i = 0; i < 6; i++){
+        buffer[i] = Wire.read();
+    }
+    while(Wire.available() > 0){
+        Wire.read();
+    }
+    return buffer[0];
+}
+
+void IRSeeker::debug(){
+    Serial.print(" IR: ");
     Serial.print(this->read());
 }

@@ -1,6 +1,5 @@
 /*
     General functions
-    Memory slots 0 -> 7 are reserved for light sensor limits
 */
 
 void motorDebug(){
@@ -22,20 +21,25 @@ void usDebug(){
     U2.debug();
 }
 
+void memDebug(){
+    for(int i = 0; i < 32; i++){
+        Serial.print(EEPROM.read(i));
+        Serial.print(" ");
+    }
+    Serial.println();
+    for(int i = 0; i < 8; i++){
+        Serial.print(" MEM");
+        Serial.print(i);
+        Serial.print(": ");
+        Serial.print(memRead(i));
+    }
+}
+
 void globalDebug(){
     motorDebug();
     lightDebug();
     usDebug();
+    Comp.debug();
+    IR.debug();
     Serial.println();
 }
-
-//I2C Communication - Not implemented yet
-/*void wireInit(){
-    Wire.begin();
-    Wire.beginTransmission(compAddress);
-    Wire.write(0x00);
-    Wire.endTransmission();
-    while(Wire.available() > 0){
-        Wire.read();
-    }
-}*/

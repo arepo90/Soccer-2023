@@ -1,3 +1,7 @@
+/*
+    Definitions for hardware classes
+*/
+
 #ifndef defs_h
 #define defs_h
 #include "Arduino.h"
@@ -28,7 +32,7 @@ class Light{
         int LIM_B;
         int id;
     public:
-        Light(int id, int PIN_A, int PIN_B);
+        Light(int id, int PIN_A, int PIN_B, bool check);
         int read();
         void setLim(int LIM_A, int LIM_B);
         void debug();
@@ -48,12 +52,30 @@ class Ultrasonic{
         void debug();
 };
 
-/*Compass sensor class - Not implemented yet
+//Compas sensor class
 class Compass{
     private:
+        int ADDRESS;
+        int MSG;
+        int OFFSET;
+        int id;
+    public:
+        Compass(int id, int C1, int C2);
+        int read();
+        void debug();
+};
 
-}
-Missing: IR Seeker class & functions
-*/
+//IR Seeker sensor class
+class IRSeeker{
+    private:
+        int ADDRESS;
+        int MSG;
+        int id;
+    public:
+        IRSeeker(int id, int IR1, int IR2);
+        int read();
+        void debug();
+
+};
 
 #endif

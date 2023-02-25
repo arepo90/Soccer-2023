@@ -1,5 +1,6 @@
 /*
     Main movement functions
+    Positive power moves robot counterclockwise
 */
 
 //Stop movement
