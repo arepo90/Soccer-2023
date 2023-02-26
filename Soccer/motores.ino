@@ -68,7 +68,7 @@ void rotate(int n){
     M4.move(n);
 }
 
-void movimientos(){
+void movements(){
     rig();
     delay(1000);
     stop();

@@ -1,5 +1,5 @@
 /*
-    Main code v0.7 - 25/02/2023 - Soccer 2023
+    Main code v0.8 - 25/02/2023 - Soccer 2023
     Esteban Martinez
 
     TODO: Specific functions (Game Plan)
@@ -71,6 +71,7 @@
 #define KPI 30
 #define KPF 100
 
+
 //Hardware declarations
 Motor M1(0, EN_1, PWM_A1, PWM_B1);
 Motor M2(1, EN_2, PWM_A2, PWM_B2);
@@ -109,21 +110,6 @@ void setup(){
 }
 
 void loop(){
-/*
-    Todo ya esta inicializado, solo es necesario cambiar los #defines donde dice AQUI
-    mas arriba para los pines de los sensores de luz.
-    La funcion de abajo va a sacar por cada sensor un numero raro (ahorita no le hagan caso)
-    y luego los valores analogicos de los dos sensores, A: Afuera, B: Adentro.
-
-    O si quieren checar primero uno por uno, pues a puro Serial.print(analogRead()), ahi como
-    vean mejor
-*/
-
-    lightDebug();
-    Serial.println();
-
-
-//---------- Ignorar por ahora ----------
     //gp();
 
     //globalDebug();
