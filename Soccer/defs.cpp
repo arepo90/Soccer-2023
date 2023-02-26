@@ -128,8 +128,10 @@ void Ultrasonic::debug(){
     Serial.print(this->read());
 }
 
-Compass::Compass(int id, int C1, int C2){
+//Setup and I2C Communication
+Compass::Compass(int id, int C1, int C2, int LIM){
     this->id = id;
+    this->LIM = LIM;
     ADDRESS = C1;
     MSG = C2;
     Wire.begin();
@@ -150,10 +152,10 @@ Compass::Compass(int id, int C1, int C2){
         buffer[i] = Wire.read();
     }
     OFFSET = word(buffer[0], buffer[1]);
-    if(OFFSET < 0) OFFSET += 360;
 }
 
-int Compass::read(){
+//Angle read by state (0: [0, 360], 1: [-1, 1])
+double Compass::read(int state){
     byte buffer[2];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
@@ -163,18 +165,31 @@ int Compass::read(){
     for(byte i = 0; i < 2; i++){
         buffer[i] = Wire.read();
     }
-    int angle = word(buffer[0], buffer[1]);
+    int angle = word(buffer[0], buffer[1]) - OFFSET;
     if(angle < 0) angle += 360;
-    angle -= OFFSET;
-    if(angle < 0) angle += 360;
-    return angle;
+    if(state == 0) return double(angle);
+    else{
+        if(angle < 180) return double(angle) / 180.0;
+        else return (double(angle)-360.0) / 180.0;
+    }
 }
 
+//Check if compass is pointing (fake) north
+bool Compass::north(){
+    int angle = this->read(0);
+    if(angle < LIM || angle > 360-LIM) return true;
+    else return false;
+}
+
+//Debug info in serial monitor
 void Compass::debug(){
-    Serial.print(" COMPASS: ");
-    Serial.print(this->read());
+    Serial.print(" COMP DEG: ");
+    Serial.print(this->read(0));
+    Serial.print(" Y: ");
+    Serial.print(this->read(1));
 }
 
+//Setup and I2C Communication
 IRSeeker::IRSeeker(int id, int IR1, int IR2){
     this->id = id;
     ADDRESS = IR1;
@@ -188,6 +203,7 @@ IRSeeker::IRSeeker(int id, int IR1, int IR2){
     }
 }
 
+//IR ball direction read (0 -> 9)
 int IRSeeker::read(){
     byte buffer[6];
     Wire.beginTransmission(ADDRESS);
@@ -204,6 +220,7 @@ int IRSeeker::read(){
     return buffer[0];
 }
 
+//Debug info in serial monitor
 void IRSeeker::debug(){
     Serial.print(" IR: ");
     Serial.print(this->read());

@@ -58,10 +58,12 @@ class Compass{
         int ADDRESS;
         int MSG;
         int OFFSET;
+        int LIM;
         int id;
     public:
-        Compass(int id, int C1, int C2);
-        int read();
+        Compass(int id, int C1, int C2, int LIM);
+        double read(int state);
+        bool north();
         void debug();
 };
 

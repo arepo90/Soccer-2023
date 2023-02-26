@@ -44,7 +44,7 @@ void rig(){
     M4.move(-POWER);
 }
 
-//Move towards the right diagonal
+//Move towards the backward right diagonal
 void rigDiag(){
     M1.move(0);
     M2.move(POWER);
@@ -52,7 +52,7 @@ void rigDiag(){
     M4.move(-POWER);
 }
 
-//Move towards the left diagonal
+//Move towards the backward left diagonal
 void lefDiag(){
     M1.move(-POWER);
     M2.move(0);
