@@ -6,6 +6,7 @@
 #include "defs.h"
 #include <EEPROM.h>
 #include <Wire.h>
+#include <Ultrasonic.h>
 
 //Save 4-byte number to EEPROM at target slots (0-indexed)
 void memSave(int n, int target){
@@ -96,36 +97,29 @@ void Light::debug(){
 }
 
 //Setup and pin declaration
-Ultrasonic::Ultrasonic(int id, int TRIG, int ECHO, unsigned long timeOut){
+US::US(int id, int TRIG, int ECHO, bool arg, unsigned long timeOut){
     this->id = id;
     this->TRIG = TRIG;
     this->ECHO = ECHO;
     this->timeOut = timeOut;
-    pinMode(TRIG, OUTPUT);
-    pinMode(ECHO, INPUT);
+    this->arg = arg;
+    us_fake = new Ultrasonic(TRIG, ECHO, timeOut);
 }
 
 //Distance read (cm)
-int Ultrasonic::read(){
-    digitalWrite(TRIG, LOW);
-    delayMicroseconds(2);
-    digitalWrite(TRIG, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(TRIG, LOW);
-    delay(30);
-    prevMicros = micros();
-    while(!digitalRead(ECHO) && (micros() - prevMicros) <= timeOut);
-    prevMicros = micros();
-    while(digitalRead(ECHO)  && (micros() - prevMicros) <= timeOut);
-    return (micros()-prevMicros) / 56;
+int US::leer(){
+    int dist = us_fake->read();
+    if(arg && dist == 357*(timeOut/20000UL)) return past;
+    else past = dist;
+    return dist;
 }
 
 //Debug info in serial monitor
-void Ultrasonic::debug(){
+void US::debug(){
     Serial.print(" US");
     Serial.print(id);
     Serial.print(": ");
-    Serial.print(this->read());
+    Serial.print(this->leer());
 }
 
 //Setup and I2C Communication
@@ -134,25 +128,8 @@ Compass::Compass(int id, int C1, int C2, int LIM){
     this->LIM = LIM;
     ADDRESS = C1;
     MSG = C2;
-    Wire.begin();
-    Wire.beginTransmission(ADDRESS);
-    Wire.write(0x00);
-    Wire.endTransmission();
-    while(Wire.available() > 0){
-        Wire.read();
-    }
-
-    byte buffer[2];
-    Wire.beginTransmission(ADDRESS);
-    Wire.write(MSG);
-    Wire.endTransmission();
-    Wire.requestFrom(ADDRESS, 2); 
-    while(Wire.available() < 2);
-    for(byte i = 0; i < 2; i++){
-        buffer[i] = Wire.read();
-    }
-    OFFSET = word(buffer[0], buffer[1]);
 }
+
 
 //Angle read by state (0: [0, 360], 1: [-1, 1])
 double Compass::read(int state){
@@ -165,13 +142,25 @@ double Compass::read(int state){
     for(byte i = 0; i < 2; i++){
         buffer[i] = Wire.read();
     }
-    int angle = word(buffer[0], buffer[1]) - OFFSET;
+    int angle = word(buffer[1], buffer[0]) - OFFSET;
     if(angle < 0) angle += 360;
     if(state == 0) return double(angle);
     else{
         if(angle < 180) return double(angle) / 180.0;
         else return (double(angle)-360.0) / 180.0;
     }
+    return word(buffer[1], buffer[0]);
+}
+
+void Compass::init(){
+    Wire.begin();
+    Wire.beginTransmission(ADDRESS);
+    Wire.write(0x00);
+    Wire.endTransmission();
+    while(Wire.available() > 0){
+        Wire.read();
+    }
+    OFFSET = this->read(0);
 }
 
 //Check if compass is pointing (fake) north
@@ -189,11 +178,15 @@ void Compass::debug(){
     Serial.print(this->read(1));
 }
 
+
 //Setup and I2C Communication
 IRSeeker::IRSeeker(int id, int IR1, int IR2){
     this->id = id;
     ADDRESS = IR1;
     MSG = IR2;
+}
+
+void IRSeeker::init(){
     Wire.begin();
     Wire.beginTransmission(ADDRESS);
     Wire.write(0x00);

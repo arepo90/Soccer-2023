@@ -5,6 +5,7 @@
 #ifndef defs_h
 #define defs_h
 #include "Arduino.h"
+#include <Ultrasonic.h>
 
 void memSave(int n, int target);
 int memRead(int target);
@@ -39,16 +40,18 @@ class Light{
 };
 
 //Ultrasonic sensors class
-class Ultrasonic{
+class US{
     private:
         int TRIG;
         int ECHO;
-        int id;
         unsigned long timeOut;
-        unsigned long prevMicros;
+        bool arg;
+        int past = 0;
+        int id;
+        Ultrasonic* us_fake;
     public:
-        Ultrasonic(int id, int TRIG, int ECHO, unsigned long timeOut = 20000UL);
-        int read();
+        US(int id, int TRIG, int ECHO, bool arg, unsigned long timeOut = 20000UL);
+        int leer();
         void debug();
 };
 
@@ -57,13 +60,14 @@ class Compass{
     private:
         int ADDRESS;
         int MSG;
-        int OFFSET;
+        int OFFSET = 0;
         int LIM;
         int id;
     public:
         Compass(int id, int C1, int C2, int LIM);
         double read(int state);
         bool north();
+        void init();
         void debug();
 };
 
@@ -76,6 +80,7 @@ class IRSeeker{
     public:
         IRSeeker(int id, int IR1, int IR2);
         int read();
+        void init();
         void debug();
 
 };
