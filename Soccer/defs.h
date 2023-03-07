@@ -5,6 +5,8 @@
 #ifndef defs_h
 #define defs_h
 #include "Arduino.h"
+#include <EEPROM.h>
+#include <Wire.h>
 #include <Ultrasonic.h>
 
 void memSave(int n, int target);
@@ -16,7 +18,7 @@ class Motor{
         int EN;
         int PWM_A;
         int PWM_B;
-        int POW = 0;
+        int POW;
         int id;
     public:
         Motor(int id, int EN, int PWM_A, int PWM_B);

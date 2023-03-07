@@ -4,44 +4,43 @@
 */
 
 //Stop movement
-void stop(){
+void stp(){
     M1.move(0);
     M2.move(0);
     M3.move(0);
     M4.move(0);
 }
 
-
 //Move forwards
 void fwd(){
-    M1.move(POWER);
+    M1.move(-POWER);
     M2.move(-POWER);
-    M3.move(-POWER);
+    M3.move(POWER);
     M4.move(POWER);
 }
 
 //Move backwards
 void bwd(){
-    M1.move(-POWER);
+    M1.move(POWER);
     M2.move(POWER);
-    M3.move(POWER);
+    M3.move(-POWER);
     M4.move(-POWER);
 }
 
 //Move left
 void lef(){
     M1.move(-POWER);
-    M2.move(-POWER);
+    M2.move(POWER);
     M3.move(POWER);
-    M4.move(POWER);
+    M4.move(-POWER);
 }
 
 //Move right
 void rig(){
     M1.move(POWER);
-    M2.move(POWER);
+    M2.move(-POWER);
     M3.move(-POWER);
-    M4.move(-POWER);
+    M4.move(POWER);
 }
 
 //Move towards the backward right diagonal
@@ -71,18 +70,18 @@ void rotate(int n){
 void movements(){
     rig();
     delay(1000);
-    stop();
+    stp();
     delay(100);
     bwd();
     delay(1000);
-    stop();
+    stp();
     delay(100);
     lef();
     delay(1000);
-    stop();
+    stp();
     delay(100);
     fwd();
     delay(1000);
-    stop();
+    stp();
     delay(100);
 }

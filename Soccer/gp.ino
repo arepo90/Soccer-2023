@@ -1,6 +1,6 @@
 /*
     Game Plan
-    Priorities: Orientation, Line, Ball, Return
+    Priorities: Orientation, Line, Ball, Return (US WIP)
 */
 
 //Strategy priority list
@@ -32,7 +32,7 @@ void line(int state){
         if(L1.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stop();
+                stp();
             }
             fwd();
             delay(50);
@@ -41,7 +41,7 @@ void line(int state){
         else if(L2.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stop();
+                stp();
             }
             rig();
             delay(50);
@@ -50,7 +50,7 @@ void line(int state){
         else if(L3.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stop();
+                stp();
             }
             bwd();
             delay(50);
@@ -59,7 +59,7 @@ void line(int state){
         else if(L4.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stop();
+                stp();
             }
             lef();
             delay(50);
@@ -93,7 +93,7 @@ void ball(){
     }
 }
 
-//Returning when no ball detected - WIP - Check ultrasonics' reliability
+//Returning when no ball detected - WIP - Ultrasonics are not reliable
 void comeback(){
     bwd();
 }

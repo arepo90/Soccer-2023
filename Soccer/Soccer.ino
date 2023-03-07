@@ -1,50 +1,46 @@
 /*
-    Main code v0.9 - 26/02/2023 - Soccer 2023
+    Main code v0.11 - 07/03/2023 - Soccer 2023
     Esteban Martinez
-
-    TODO: Test motor functions / Gampe Plan
 */
 
 
 #include "defs.h"
-#include <EEPROM.h>
-#include <Wire.h>
 
 
-//Motor 1 - Backward
+//Motor 1 - Back Left
 #define EN_1 33
 #define PWM_A1 2
 #define PWM_B1 4
-//Motor 2 - Left
+//Motor 2 - Front Left
 #define EN_2 32
-#define PWM_A2 6
-#define PWM_B2 8
-//Motor 3 - Forward
+#define PWM_A2 8
+#define PWM_B2 6
+//Motor 3 - Front Right
 #define EN_3 25
 #define PWM_A3 7
 #define PWM_B3 9
-//Motor 4 - Right
+//Motor 4 - Back Right
 #define EN_4 23
-#define PWM_A4 3
-#define PWM_B4 5
+#define PWM_A4 5
+#define PWM_B4 3
 
-//A: Outer, B: Inner - Sin nombre
-//Light 0 - Backward
+//A: Outer, B: Inner
+//Light 1 - Back
 #define LUZ_A1 A5
 #define LUZ_B1 A1
 #define LIM_A1 0 
 #define LIM_B1 0
-//Light 1 - Left
+//Light 2 - Left
 #define LUZ_A2 A0
 #define LUZ_B2 A2
 #define LIM_A2 0 
 #define LIM_B2 0
-//Light 2 - Forward
+//Light 3 - Front
 #define LUZ_A3 A3
 #define LUZ_B3 A8
 #define LIM_A3 0 
 #define LIM_B3 0
-//Light 3 - Right
+//Light 4 - Right
 #define LUZ_A4 A4
 #define LUZ_B4 A6
 #define LIM_A4 0 
@@ -67,7 +63,7 @@
 #define IR2 0x49
 
 //Motor settings
-#define POWER 80
+#define POWER 50
 #define KPI 30
 #define KPF 100
 
@@ -86,7 +82,7 @@ Light L3(2, LUZ_A3, LUZ_B3, arg1);
 Light L4(3, LUZ_A4, LUZ_B4, arg1);
 
 //Optional last argument sets the timeout (range and delay change proportionally)
-bool arg2 = 0;
+bool arg2 = 20000UL;
 US U1(0, US_T1, US_E1, arg2);
 US U2(1, US_T2, US_E2, arg2);
 
@@ -98,17 +94,15 @@ IRSeeker IR(0, IR1, IR2);
 //Main code
 void setup(){
     globalInit();
-    
-    /*if(arg == 0){
+    if(!arg1){
         L1.setLim(LIM_A1, LIM_B1);
         L2.setLim(LIM_A2, LIM_B2);
         L3.setLim(LIM_A3, LIM_B3);
         L4.setLim(LIM_A4, LIM_B4);
-    }*/
-
+    }
     Serial.println("3 pesos");
 }
 
 void loop(){
-    rotate(50);
+
 }

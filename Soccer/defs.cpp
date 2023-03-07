@@ -1,12 +1,9 @@
+
 /*
     Source code for hardware classes and general functions-
 */
 
-#include "Arduino.h"
 #include "defs.h"
-#include <EEPROM.h>
-#include <Wire.h>
-#include <Ultrasonic.h>
 
 //Save 4-byte number to EEPROM at target slots (0-indexed)
 void memSave(int n, int target){
@@ -41,8 +38,8 @@ Motor::Motor(int id, int EN, int PWM_A, int PWM_B){
 void Motor::move(int POW){
     this->POW = POW;
     digitalWrite(EN, HIGH);
-    analogWrite(PWM_A, (POW < 0 ? 0 : POW));
-    analogWrite(PWM_B, (POW < 0 ? POW : 0));
+    analogWrite(PWM_A, (POW > 0 ? 0 : -POW));
+    analogWrite(PWM_B, (POW > 0 ? POW : 0));
 }
 
 void Motor::debug(){
