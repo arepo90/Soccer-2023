@@ -8,6 +8,9 @@
 #include <EEPROM.h>
 #include <Wire.h>
 #include <Ultrasonic.h>
+#include <digitalWriteFast.h>
+
+#define NaN 420
 
 void memSave(int n, int target);
 int memRead(int target);
@@ -52,8 +55,8 @@ class US{
         int id;
         Ultrasonic* us_fake;
     public:
-        US(int id, int TRIG, int ECHO, bool arg, unsigned long timeOut = 20000UL);
-        int leer();
+        US(int id, int TRIG, int ECHO, bool arg = false, unsigned long timeOut = 20000UL);
+        int read();
         void debug();
 };
 
@@ -84,7 +87,6 @@ class IRSeeker{
         int read();
         void init();
         void debug();
-
 };
 
 #endif

@@ -29,15 +29,15 @@ Motor::Motor(int id, int EN, int PWM_A, int PWM_B){
     this->EN = EN;
     this->PWM_A = PWM_A;
     this->PWM_B = PWM_B;
-    pinMode(EN, OUTPUT);
-    pinMode(PWM_A, OUTPUT);
-    pinMode(PWM_B, OUTPUT);
+    pinModeFast(EN, OUTPUT);
+    pinModeFast(PWM_A, OUTPUT);
+    pinModeFast(PWM_B, OUTPUT);
 }
 
 //Set motor power (-255 -> 255)
 void Motor::move(int POW){
     this->POW = POW;
-    digitalWrite(EN, HIGH);
+    digitalWriteFast(EN, (POW == NaN ? LOW : HIGH));
     analogWrite(PWM_A, (POW > 0 ? 0 : -POW));
     analogWrite(PWM_B, (POW > 0 ? POW : 0));
 }
@@ -58,8 +58,8 @@ Light::Light(int id, int PIN_A, int PIN_B, bool check){
         LIM_A = memRead(id*2);
         LIM_B = memRead((id*2)+1);
     }
-    pinMode(PIN_A, INPUT);
-    pinMode(PIN_B, INPUT);
+    pinModeFast(PIN_A, INPUT);
+    pinModeFast(PIN_B, INPUT);
 }
 
 //Read sensor block state (0: None, 1: Outer, 2: Inner, 3: Both)
@@ -104,10 +104,10 @@ US::US(int id, int TRIG, int ECHO, bool arg, unsigned long timeOut){
 }
 
 //Distance read (cm)
-int US::leer(){
+int US::read(){
     int dist = us_fake->read();
     if(arg && dist == 357*(timeOut/20000UL)) return past;
-    else past = dist;
+    past = dist;
     return dist;
 }
 
@@ -116,7 +116,7 @@ void US::debug(){
     Serial.print(" US");
     Serial.print(id);
     Serial.print(": ");
-    Serial.print(this->leer());
+    Serial.print(this->read());
 }
 
 //Setup and I2C Communication
@@ -144,9 +144,8 @@ double Compass::read(int state){
     if(state == 0) return double(angle);
     else{
         if(angle < 180) return double(angle) / 180.0;
-        else return (double(angle)-360.0) / 180.0;
+        return (double(angle)-360.0) / 180.0;
     }
-    return word(buffer[1], buffer[0]);
 }
 
 void Compass::init(){
@@ -160,7 +159,7 @@ void Compass::init(){
     OFFSET = this->read(0);
 }
 
-//Check if compass is pointing (fake) north
+//Check if compass is pointing towards (fake) north
 bool Compass::north(){
     int angle = this->read(0);
     if(angle < LIM || angle > 360-LIM) return true;

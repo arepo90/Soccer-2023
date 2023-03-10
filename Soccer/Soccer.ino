@@ -1,6 +1,8 @@
 /*
-    Main code v0.11 - 07/03/2023 - Soccer 2023
+    Main code v0.12 - 09/03/2023 - Soccer 2023
     Esteban Martinez
+
+    TODO: Set light sensor limits
 */
 
 
@@ -81,7 +83,8 @@ Light L2(1, LUZ_A2, LUZ_B2, arg1);
 Light L3(2, LUZ_A3, LUZ_B3, arg1);
 Light L4(3, LUZ_A4, LUZ_B4, arg1);
 
-//Optional last argument sets the timeout (range and delay change proportionally)
+//Optional 3rd argument sets the timeout (range and delay change proportionally)
+//Optional 4th argument 
 bool arg2 = 20000UL;
 US U1(0, US_T1, US_E1, arg2);
 US U2(1, US_T2, US_E2, arg2);

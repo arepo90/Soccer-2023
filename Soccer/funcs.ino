@@ -10,7 +10,7 @@ bool inside(){
 void globalInit(){
     Serial.begin(9600);
     //IR.init();
-    //Comp.init();
+    Comp.init();
     Serial.print("Tacos de a ");
 }
 
