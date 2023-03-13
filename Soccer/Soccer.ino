@@ -1,8 +1,8 @@
 /*
-    Main code v0.12 - 09/03/2023 - Soccer 2023
+    Main code v0.13 - 13/03/2023 - Soccer 2023
     Esteban Martinez
 
-    TODO: Set light sensor limits
+    TODO: Test motor functions
 */
 
 
@@ -30,23 +30,23 @@
 //Light 1 - Back
 #define LUZ_A1 A5
 #define LUZ_B1 A1
-#define LIM_A1 0 
-#define LIM_B1 0
+#define LIM_A1 845 
+#define LIM_B1 709
 //Light 2 - Left
 #define LUZ_A2 A0
 #define LUZ_B2 A2
-#define LIM_A2 0 
-#define LIM_B2 0
+#define LIM_A2 636 
+#define LIM_B2 575
 //Light 3 - Front
 #define LUZ_A3 A3
 #define LUZ_B3 A8
-#define LIM_A3 0 
-#define LIM_B3 0
+#define LIM_A3 675 
+#define LIM_B3 680
 //Light 4 - Right
 #define LUZ_A4 A4
 #define LUZ_B4 A6
-#define LIM_A4 0 
-#define LIM_B4 0
+#define LIM_A4 862
+#define LIM_B4 855
 
 //Ultrasonic 1 - Left
 #define US_E1 34
@@ -69,6 +69,7 @@
 #define KPI 30
 #define KPF 100
 
+const int robotId = 0; 
 
 //Hardware declarations
 Motor M1(0, EN_1, PWM_A1, PWM_B1);
@@ -83,8 +84,7 @@ Light L2(1, LUZ_A2, LUZ_B2, arg1);
 Light L3(2, LUZ_A3, LUZ_B3, arg1);
 Light L4(3, LUZ_A4, LUZ_B4, arg1);
 
-//Optional 3rd argument sets the timeout (range and delay change proportionally)
-//Optional 4th argument 
+//Optional last argument sets the timeout (range and delay change proportionally)
 bool arg2 = 20000UL;
 US U1(0, US_T1, US_E1, arg2);
 US U2(1, US_T2, US_E2, arg2);
@@ -97,6 +97,7 @@ IRSeeker IR(0, IR1, IR2);
 //Main code
 void setup(){
     globalInit();
+    //defInit();
     if(!arg1){
         L1.setLim(LIM_A1, LIM_B1);
         L2.setLim(LIM_A2, LIM_B2);

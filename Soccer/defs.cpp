@@ -1,6 +1,6 @@
 
 /*
-    Source code for hardware classes and general functions-
+    Source code for hardware classes and general functions
 */
 
 #include "defs.h"
