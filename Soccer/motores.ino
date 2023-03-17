@@ -1,17 +1,25 @@
 /*
     Main movement functions
-    Positive power moves robot counterclockwise
+    Positive POWER moves robot counterclockwise
 */
 
-//Stop movement
-void stp(){
-    M1.move(0);
-    M2.move(0);
-    M3.move(0);
-    M4.move(0);
+//Stop movement (0: regular, 1: hard brake)
+void stp(int mode){
+    if(mode == 0){
+        M1.move(0);
+        M2.move(0);
+        M3.move(0);
+        M4.move(0);
+    }
+    else{
+        M1.brake(BRAKE);
+        M2.brake(BRAKE);
+        M3.brake(BRAKE);
+        M4.brake(BRAKE);
+    }
 }
 
-//Move forwards
+//Move forward
 void fwd(){
     M1.move(-POWER);
     M2.move(-POWER);
@@ -70,18 +78,18 @@ void rotate(int n){
 void movements(){
     rig();
     delay(1000);
-    stp();
+    stp(0);
     delay(100);
     bwd();
     delay(1000);
-    stp();
+    stp(0);
     delay(100);
     lef();
     delay(1000);
-    stp();
+    stp(0);
     delay(100);
     fwd();
     delay(1000);
-    stp();
+    stp(0);
     delay(100);
 }

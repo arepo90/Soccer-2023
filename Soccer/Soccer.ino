@@ -1,5 +1,5 @@
 /*
-    Main code v0.13 - 13/03/2023 - Soccer 2023
+    Main code v0.14 - 16/03/2023 - Soccer 2023
     Esteban Martinez
 
     TODO: Test motor functions
@@ -58,7 +58,7 @@
 //Compass address, message and limit
 #define C1 0x01
 #define C2 0x44
-#define C_LIM 10
+#define C_LIM 12
 
 //IR Seeker address and message
 #define IR1 0x10 / 2
@@ -66,8 +66,9 @@
 
 //Motor settings
 #define POWER 50
-#define KPI 30
-#define KPF 100
+#define BRAKE 150
+#define KPI 50
+#define KPF 150
 
 const int robotId = 0; 
 
@@ -98,15 +99,18 @@ IRSeeker IR(0, IR1, IR2);
 void setup(){
     globalInit();
     //defInit();
-    if(!arg1){
+    /*if(!arg1){
         L1.setLim(LIM_A1, LIM_B1);
         L2.setLim(LIM_A2, LIM_B2);
         L3.setLim(LIM_A3, LIM_B3);
         L4.setLim(LIM_A4, LIM_B4);
-    }
+    }*/
     Serial.println("3 pesos");
 }
 
 void loop(){
-
+    Comp.debug();
+    Serial.println();
+    if(!Comp.north()) orientation();
+    else stp(1);
 }

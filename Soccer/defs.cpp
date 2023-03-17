@@ -42,6 +42,15 @@ void Motor::move(int POW){
     analogWrite(PWM_B, (POW > 0 ? POW : 0));
 }
 
+//Motor stop (0: regular, 1: hard brake)
+void Motor::brake(int force){
+    if(POW == 0) return;
+    this->move((POW > 0 ? -force : force));
+    delay(5);
+    this->move(0);
+    delay(3);
+}
+
 void Motor::debug(){
     Serial.print(" M");
     Serial.print(id);
@@ -172,6 +181,10 @@ void Compass::debug(){
     Serial.print(this->read(0));
     Serial.print(" Y: ");
     Serial.print(this->read(1));
+    Serial.print(" N? ");
+    Serial.print(this->north());
+    Serial.print(" OFF: ");
+    Serial.print(OFFSET);
 }
 
 

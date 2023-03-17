@@ -14,9 +14,7 @@ void gp(){
 //Orientation towards fake north (front)
 void orientation(){
     double angle = Comp.read(1);
-    double U = angle * (KPF - KPI) + KPI;
-    if(angle < 0) rotate(int(-U));
-    else rotate(int(U));
+    rotate(int(angle * (KPF - KPI) + (angle / abs(angle)) * KPI));
 }
 
 //Staying within boundaries (0: immediate response, 1: checks for change in IR)
@@ -32,7 +30,7 @@ void line(int state){
         if(L1.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stp();
+                stp(0);
             }
             fwd();
             delay(50);
@@ -41,7 +39,7 @@ void line(int state){
         else if(L2.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stp();
+                stp(0);
             }
             rig();
             delay(50);
@@ -50,7 +48,7 @@ void line(int state){
         else if(L3.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stp();
+                stp(0);
             }
             bwd();
             delay(50);
@@ -59,7 +57,7 @@ void line(int state){
         else if(L4.read() == 1){
             int past = IR.read();
             while(IR.read() == past){
-                stp();
+                stp(0);
             }
             lef();
             delay(50);

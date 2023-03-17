@@ -14,6 +14,11 @@ void globalInit(){
     Serial.print("Tacos de a ");
 }
 
+void defInit(){
+    Serial.begin(9600);
+    Serial.print("Tacos de a ");
+}
+
 void motorDebug(){
     M1.debug();
     M2.debug();

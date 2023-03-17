@@ -26,6 +26,7 @@ class Motor{
     public:
         Motor(int id, int EN, int PWM_A, int PWM_B);
         void move(int POW);
+        void brake(int force);
         void debug();
 };
 
