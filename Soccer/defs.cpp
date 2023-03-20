@@ -24,20 +24,22 @@ int memRead(int target){
 }
 
 //Setup and pin declaration
-Motor::Motor(int id, int EN, int PWM_A, int PWM_B){
+Motor::Motor(int id, int EN, int PWM_A, int PWM_B, int defPow){
     this->id = id;
     this->EN = EN;
     this->PWM_A = PWM_A;
     this->PWM_B = PWM_B;
+    this->defPow = defPow;
     pinModeFast(EN, OUTPUT);
     pinModeFast(PWM_A, OUTPUT);
     pinModeFast(PWM_B, OUTPUT);
 }
 
 //Set motor power (-255 -> 255)
-void Motor::move(int POW){
-    this->POW = POW;
-    digitalWriteFast(EN, (POW == NaN ? LOW : HIGH));
+void Motor::move(int Pow){
+    if(abs(Pow) == NaN) POW = defPow * (Pow / NaN);
+    else POW = Pow;
+    digitalWriteFast(EN, HIGH);
     analogWrite(PWM_A, (POW > 0 ? 0 : -POW));
     analogWrite(PWM_B, (POW > 0 ? POW : 0));
 }
@@ -49,6 +51,13 @@ void Motor::brake(int force){
     delay(5);
     this->move(0);
     delay(3);
+}
+
+void Motor::test(){
+    this->move(defPow);
+    delay(1000);
+    this->move(-defPow);
+    delay(1000);
 }
 
 void Motor::debug(){

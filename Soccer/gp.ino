@@ -68,9 +68,9 @@ void line(int state){
 
 //Ball tracking - WIP - Check cases for best performance
 void ball(){
-    int direction = IR.read();
-    switch(direction){
-        case 1: case 9:
+    int direc = IR.read();
+    switch(direc){
+        case 0: case 1: case 9:
             bwd();
             break;
         case 2: case 3:

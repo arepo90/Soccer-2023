@@ -1,6 +1,6 @@
 /*
     Main movement functions
-    Positive POWER moves robot counterclockwise
+    Positive DEF moves robot counterclockwise
 */
 
 //Stop movement (0: regular, 1: hard brake)
@@ -21,53 +21,53 @@ void stp(int mode){
 
 //Move forward
 void fwd(){
-    M1.move(-POWER);
-    M2.move(-POWER);
-    M3.move(POWER);
-    M4.move(POWER);
+    M1.move(-DEF);
+    M2.move(-DEF);
+    M3.move(DEF);
+    M4.move(DEF);
 }
 
 //Move backwards
 void bwd(){
-    M1.move(POWER);
-    M2.move(POWER);
-    M3.move(-POWER);
-    M4.move(-POWER);
+    M1.move(DEF);
+    M2.move(DEF);
+    M3.move(-DEF);
+    M4.move(-DEF);
 }
 
 //Move left
 void lef(){
-    M1.move(-POWER);
-    M2.move(POWER);
-    M3.move(POWER);
-    M4.move(-POWER);
+    M1.move(-DEF);
+    M2.move(DEF);
+    M3.move(DEF);
+    M4.move(-DEF);
 }
 
 //Move right
 void rig(){
-    M1.move(POWER);
-    M2.move(-POWER);
-    M3.move(-POWER);
-    M4.move(POWER);
+    M1.move(DEF);
+    M2.move(-DEF);
+    M3.move(-DEF);
+    M4.move(DEF);
 }
 
 //Move towards the backward right diagonal
 void rigDiag(){
     M1.move(0);
-    M2.move(POWER);
+    M2.move(DEF);
     M3.move(0);
-    M4.move(-POWER);
+    M4.move(-DEF);
 }
 
 //Move towards the backward left diagonal
 void lefDiag(){
-    M1.move(-POWER);
+    M1.move(-DEF);
     M2.move(0);
-    M3.move(POWER);
+    M3.move(DEF);
     M4.move(0);
 }
 
-//Rotate with given power (power > 0 is counterclockwise)
+//Rotate with given DEF (DEF > 0 is counterclockwise)
 void rotate(int n){
     M1.move(n);
     M2.move(n);
@@ -77,19 +77,19 @@ void rotate(int n){
 
 void movements(){
     rig();
-    delay(1000);
+    delay(500);
     stp(0);
-    delay(100);
+    delay(500);
     bwd();
-    delay(1000);
+    delay(500);
     stp(0);
-    delay(100);
+    delay(500);
     lef();
-    delay(1000);
+    delay(500);
     stp(0);
-    delay(100);
+    delay(500);
     fwd();
-    delay(1000);
+    delay(500);
     stp(0);
-    delay(100);
+    delay(500);
 }

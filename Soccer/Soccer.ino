@@ -1,8 +1,8 @@
 /*
-    Main code v0.14 - 16/03/2023 - Soccer 2023
+    Main code v0.15 - 20/03/2023 - Soccer 2023
     Esteban Martinez
 
-    TODO: Test motor functions
+    TODO: Conitue testing motor functions (Global 50 power works)
 */
 
 
@@ -11,8 +11,8 @@
 
 //Motor 1 - Back Left
 #define EN_1 33
-#define PWM_A1 2
-#define PWM_B1 4
+#define PWM_A1 4
+#define PWM_B1 2
 //Motor 2 - Front Left
 #define EN_2 32
 #define PWM_A2 8
@@ -23,8 +23,8 @@
 #define PWM_B3 9
 //Motor 4 - Back Right
 #define EN_4 23
-#define PWM_A4 5
-#define PWM_B4 3
+#define PWM_A4 3
+#define PWM_B4 5
 
 //A: Outer, B: Inner
 //Light 1 - Back
@@ -64,19 +64,25 @@
 #define IR1 0x10 / 2
 #define IR2 0x49
 
-//Motor settings
-#define POWER 50
+//Motor powers
+#define POW1 50
+#define POW2 50
+#define POW3 50
+#define POW4 50
+
+//Movement settings
+#define DEF NaN
 #define BRAKE 150
-#define KPI 50
-#define KPF 150
+#define KPI 30
+#define KPF 120
 
 const int robotId = 0; 
 
 //Hardware declarations
-Motor M1(0, EN_1, PWM_A1, PWM_B1);
-Motor M2(1, EN_2, PWM_A2, PWM_B2);
-Motor M3(2, EN_3, PWM_A3, PWM_B3);
-Motor M4(3, EN_4, PWM_A4, PWM_B4);
+Motor M1(0, EN_1, PWM_A1, PWM_B1, POW1);
+Motor M2(1, EN_2, PWM_A2, PWM_B2, POW2);
+Motor M3(2, EN_3, PWM_A3, PWM_B3, POW3);
+Motor M4(3, EN_4, PWM_A4, PWM_B4, POW4);
 
 //Last argument changes the limit's source (0: setLim(), 1: EEPROM)
 bool arg1 = 0;
@@ -97,20 +103,16 @@ IRSeeker IR(0, IR1, IR2);
 
 //Main code
 void setup(){
-    globalInit();
-    //defInit();
-    /*if(!arg1){
+    globalInit(0);
+    if(!arg1){
         L1.setLim(LIM_A1, LIM_B1);
         L2.setLim(LIM_A2, LIM_B2);
         L3.setLim(LIM_A3, LIM_B3);
         L4.setLim(LIM_A4, LIM_B4);
-    }*/
+    }
     Serial.println("3 pesos");
 }
 
 void loop(){
-    Comp.debug();
-    Serial.println();
-    if(!Comp.north()) orientation();
-    else stp(1);
+    movements();
 }

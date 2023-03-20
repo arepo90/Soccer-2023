@@ -22,11 +22,13 @@ class Motor{
         int PWM_A;
         int PWM_B;
         int POW;
+        int defPow;
         int id;
     public:
-        Motor(int id, int EN, int PWM_A, int PWM_B);
+        Motor(int id, int EN, int PWM_A, int PWM_B, int defPow);
         void move(int POW);
         void brake(int force);
+        void test();
         void debug();
 };
 

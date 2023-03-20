@@ -7,18 +7,13 @@ bool inside(){
     return !(L1.read() + L2.read() + L3.read() + L4.read());
 }
 
-void globalInit(){
+//Initialize program (0: Default, 1: Compass, 2: IR, 3: All)
+void globalInit(int mode){
     Serial.begin(9600);
-    //IR.init();
-    Comp.init();
+    if(mode % 2 == 1) Comp.init();
+    if(mode >= 2) IR.init();
     Serial.print("Tacos de a ");
 }
-
-void defInit(){
-    Serial.begin(9600);
-    Serial.print("Tacos de a ");
-}
-
 void motorDebug(){
     M1.debug();
     M2.debug();
