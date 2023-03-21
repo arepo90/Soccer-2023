@@ -1,6 +1,6 @@
 /*
     Main movement functions
-    Positive DEF moves robot counterclockwise
+    Positive power rotates counterclockwise
 */
 
 //Stop movement (0: regular, 1: hard brake)

@@ -1,5 +1,5 @@
 /*
-    Definitions for hardware classes
+    Definitions for hardware classes and general functions
 */
 
 #ifndef defs_h
@@ -10,8 +10,11 @@
 #include <Ultrasonic.h>
 #include <digitalWriteFast.h>
 
+#define deb(x) Serial.print(#x); Serial.print(": "); Serial.print(x);
 #define NaN 420
 
+double degToPoint(int x);
+int pointToDeg(double x);
 void memSave(int n, int target);
 int memRead(int target);
 
@@ -26,7 +29,7 @@ class Motor{
         int id;
     public:
         Motor(int id, int EN, int PWM_A, int PWM_B, int defPow);
-        void move(int POW);
+        void move(int Pow);
         void brake(int force);
         void test();
         void debug();
@@ -73,7 +76,7 @@ class Compass{
         int id;
     public:
         Compass(int id, int C1, int C2, int LIM);
-        double read(int state);
+        double read(int mode);
         bool north();
         void init();
         void debug();
@@ -87,7 +90,7 @@ class IRSeeker{
         int id;
     public:
         IRSeeker(int id, int IR1, int IR2);
-        int read();
+        int read(int mode);
         void init();
         void debug();
 };

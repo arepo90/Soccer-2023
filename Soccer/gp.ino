@@ -1,14 +1,22 @@
 /*
     Game Plan
-    Priorities: Orientation, Line, Ball, Return (US WIP)
+    Priorities: Orientation, Line, Ball, Return (WIP)
 */
 
 //Strategy priority list
 void gp(){
     if(!Comp.north()) orientation();
     else if(!inside()) line(0);
-    else if(IR.read()) ball();
+    else if(IR.read(0)) ball();
     else comeback();
+}
+
+//Motor control with given angle [-1, 1]
+void vectorPath(double angle){
+    M1.move(int(POW1 * sin(PI*angle - PI/4.0)));
+    M2.move(int(POW2 * sin(PI*angle - 3.0*PI/4.0)));
+    M3.move(int(POW3 * sin(PI*angle + 3.0*PI/4.0)));
+    M4.move(int(POW4 * sin(PI*angle + PI/4.0)));
 }
 
 //Orientation towards fake north (front)
@@ -28,8 +36,8 @@ void line(int state){
     }
     else{
         if(L1.read() == 1){
-            int past = IR.read();
-            while(IR.read() == past){
+            int past = IR.read(0);
+            while(IR.read(0) == past){
                 stp(0);
             }
             fwd();
@@ -37,8 +45,8 @@ void line(int state){
         }
         else if(L1.read() != 0) fwd();
         else if(L2.read() == 1){
-            int past = IR.read();
-            while(IR.read() == past){
+            int past = IR.read(0);
+            while(IR.read(0) == past){
                 stp(0);
             }
             rig();
@@ -46,8 +54,8 @@ void line(int state){
         }
         else if(L2.read() != 0) rig();
         else if(L3.read() == 1){
-            int past = IR.read();
-            while(IR.read() == past){
+            int past = IR.read(0);
+            while(IR.read(0) == past){
                 stp(0);
             }
             bwd();
@@ -55,8 +63,8 @@ void line(int state){
         }
         else if(L3.read() != 0) bwd();
         else if(L4.read() == 1){
-            int past = IR.read();
-            while(IR.read() == past){
+            int past = IR.read(0);
+            while(IR.read(0) == past){
                 stp(0);
             }
             lef();
@@ -68,7 +76,7 @@ void line(int state){
 
 //Ball tracking - WIP - Check cases for best performance
 void ball(){
-    int direc = IR.read();
+    int direc = IR.read(0);
     switch(direc){
         case 0: case 1: case 9:
             bwd();

@@ -1,9 +1,20 @@
-
 /*
     Source code for hardware classes and general functions
 */
 
 #include "defs.h"
+
+//Degree to decimal angle [-1, 1]
+double degToPoint(int x){
+    if(x == 180) return 1.0;
+    return ( ((-abs(double(x)-180.0)) / (double(x)-180.0)) - 1.0 + double(x)/180.0 );
+}
+
+//Decimal angle to degree [0, 360]
+int pointToDeg(double x){
+    if(x == 0.0) return 0;
+    return ( 180.0 * (x + 1.0 - abs(x)/x) );
+}
 
 //Save 4-byte number to EEPROM at target slots (0-indexed)
 void memSave(int n, int target){
@@ -53,13 +64,15 @@ void Motor::brake(int force){
     delay(3);
 }
 
+//Test motor back and forth
 void Motor::test(){
     this->move(defPow);
-    delay(1000);
+    delay(500);
     this->move(-defPow);
-    delay(1000);
+    delay(500);
 }
 
+//Debug info in serial monitor
 void Motor::debug(){
     Serial.print(" M");
     Serial.print(id);
@@ -145,9 +158,8 @@ Compass::Compass(int id, int C1, int C2, int LIM){
     MSG = C2;
 }
 
-
-//Angle read by state (0: [0, 360], 1: [-1, 1])
-double Compass::read(int state){
+//Angle read by mode (0: [0, 360], 1: [-1, 1])
+double Compass::read(int mode){
     byte buffer[2];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
@@ -159,22 +171,24 @@ double Compass::read(int state){
     }
     int angle = word(buffer[1], buffer[0]) - OFFSET;
     if(angle < 0) angle += 360;
-    if(state == 0) return double(angle);
-    else{
-        if(angle < 180) return double(angle) / 180.0;
-        return (double(angle)-360.0) / 180.0;
-    }
+    if(mode == 0) return double(angle);
+    return degToPoint(angle);
 }
 
+//Initialize I2C communication
 void Compass::init(){
+    Serial.print("Compass initialization started");
     Wire.begin();
     Wire.beginTransmission(ADDRESS);
     Wire.write(0x00);
     Wire.endTransmission();
     while(Wire.available() > 0){
         Wire.read();
+        Serial.print(".");
     }
     OFFSET = this->read(0);
+    Serial.println();
+    Serial.println("Compass initialization complete");
 }
 
 //Check if compass is pointing towards (fake) north
@@ -196,7 +210,6 @@ void Compass::debug(){
     Serial.print(OFFSET);
 }
 
-
 //Setup and I2C Communication
 IRSeeker::IRSeeker(int id, int IR1, int IR2){
     this->id = id;
@@ -204,18 +217,23 @@ IRSeeker::IRSeeker(int id, int IR1, int IR2){
     MSG = IR2;
 }
 
+//Initialize I2C communication
 void IRSeeker::init(){
+    Serial.print("IR Seeker initialization started");
     Wire.begin();
     Wire.beginTransmission(ADDRESS);
     Wire.write(0x00);
     Wire.endTransmission();
     while(Wire.available() > 0){
         Wire.read();
+        Serial.print(".");
     }
+    Serial.println();
+    Serial.println("IR Seeker initialization complete");
 }
 
-//IR ball direction read (0 -> 9)
-int IRSeeker::read(){
+//IR ball direction read by mode (0: [0, 9], 1: [-120, 120])
+int IRSeeker::read(int mode){
     byte buffer[6];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
@@ -228,11 +246,13 @@ int IRSeeker::read(){
     while(Wire.available() > 0){
         Wire.read();
     }
-    return buffer[0];
+    if(mode == 0) return buffer[0];
+    if(buffer[0] == 0) return NaN;
+    return (buffer[0] * 30 - 150);
 }
 
 //Debug info in serial monitor
 void IRSeeker::debug(){
     Serial.print(" IR: ");
-    Serial.print(this->read());
+    Serial.print(this->read(0));
 }

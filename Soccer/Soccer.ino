@@ -1,8 +1,8 @@
 /*
-    Main code v0.15 - 20/03/2023 - Soccer 2023
+    Main code v0.16 - 20/03/2023 - Soccer 2023
     Esteban Martinez
 
-    TODO: Conitue testing motor functions (Global 50 power works)
+    TODO: Continue testing functions (Global 50 power works)
 */
 
 
