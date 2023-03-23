@@ -1,22 +1,33 @@
 /*
-    Definitions for hardware classes and general functions
+    Libraries, hardware classes and general functions
 */
 
 #ifndef defs_h
 #define defs_h
+
+//-----------Libraries and definitions-----------
+
 #include "Arduino.h"
 #include <EEPROM.h>
 #include <Wire.h>
 #include <Ultrasonic.h>
 #include <digitalWriteFast.h>
 
-#define deb(x) Serial.print(#x); Serial.print(": "); Serial.print(x);
+typedef long long lli;
+typedef long double ld;
+typedef unsigned long ul;
+
 #define NaN 420
 
-double degToPoint(int x);
-int pointToDeg(double x);
+//---------------General functions---------------
+
+double degToDec(int x);
+int decToDeg(double x);
 void memSave(int n, int target);
 int memRead(int target);
+
+
+//---------------Hardware classes---------------
 
 //Motor class
 class Motor{
@@ -55,13 +66,13 @@ class US{
     private:
         int TRIG;
         int ECHO;
-        unsigned long timeOut;
+        ul timeOut;
         bool arg;
         int past = 0;
         int id;
         Ultrasonic* us_fake;
     public:
-        US(int id, int TRIG, int ECHO, bool arg = false, unsigned long timeOut = 20000UL);
+        US(int id, int TRIG, int ECHO, bool arg, ul timeOut);
         int read();
         void debug();
 };

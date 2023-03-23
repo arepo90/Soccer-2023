@@ -1,6 +1,8 @@
 /*
-    General functions
+    Helper functions and debugging
 */
+
+//---------------General functions---------------
 
 //Check if robot is within boundaries (0: outside, 1: inside)
 bool inside(){
@@ -14,6 +16,10 @@ void globalInit(int mode){
     if(mode >= 2) IR.init();
     Serial.print("Tacos de a ");
 }
+
+//---------------Debugging functions---------------
+
+//Debug motor power
 void motorDebug(){
     M1.debug();
     M2.debug();
@@ -21,6 +27,7 @@ void motorDebug(){
     M4.debug();
 }
 
+//Debug light values
 void lightDebug(){
     L1.debug();
     L2.debug();
@@ -28,11 +35,13 @@ void lightDebug(){
     L4.debug();
 }
 
+//Debug US distances
 void usDebug(){
     U1.debug();
     U2.debug();
 }
 
+//Debug EEPROM memory
 void memDebug(){
     for(int i = 0; i < 32; i++){
         Serial.print(EEPROM.read(i));
@@ -47,6 +56,7 @@ void memDebug(){
     }
 }
 
+//Debug all functions
 void globalDebug(){
     motorDebug();
     lightDebug();

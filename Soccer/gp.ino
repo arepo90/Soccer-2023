@@ -3,20 +3,14 @@
     Priorities: Orientation, Line, Ball, Return (WIP)
 */
 
+//---------------Game functions---------------
+
 //Strategy priority list
 void gp(){
     if(!Comp.north()) orientation();
     else if(!inside()) line(0);
     else if(IR.read(0)) ball();
     else comeback();
-}
-
-//Motor control with given angle [-1, 1]
-void vectorPath(double angle){
-    M1.move(int(POW1 * sin(PI*angle - PI/4.0)));
-    M2.move(int(POW2 * sin(PI*angle - 3.0*PI/4.0)));
-    M3.move(int(POW3 * sin(PI*angle + 3.0*PI/4.0)));
-    M4.move(int(POW4 * sin(PI*angle + PI/4.0)));
 }
 
 //Orientation towards fake north (front)
@@ -74,11 +68,18 @@ void line(int state){
     }
 }
 
+//Returning when no ball detected - WIP - Ultrasonics are NOT reliable
+void comeback(){
+    bwd();
+}
+
 //Ball tracking - WIP - Check cases for best performance
 void ball(){
-    int direc = IR.read(0);
-    switch(direc){
-        case 0: case 1: case 9:
+    switch(IR.read(0)){
+        case 0:
+            comeback();
+            break;
+        case 1: case 9:
             bwd();
             break;
         case 2: case 3:
@@ -99,7 +100,19 @@ void ball(){
     }
 }
 
-//Returning when no ball detected - WIP - Ultrasonics are not reliable
-void comeback(){
-    bwd();
+//Ball tracking with vector control - WIP
+void ballVector(){
+    double angle = degToDec(IR.read(1));
+    if(angle != double(NaN)) vectorPath(angle);
+    else comeback();
+}
+
+//---------------Auxiliary functions---------------
+
+//Motor control for a given angle [-1, 1]
+void vectorPath(double angle){
+    M1.move(int(POW1 * sin(PI*angle - PI/4.0)));
+    M2.move(int(POW2 * sin(PI*angle - 3.0*PI/4.0)));
+    M3.move(int(POW3 * sin(PI*angle + 3.0*PI/4.0)));
+    M4.move(int(POW4 * sin(PI*angle + PI/4.0)));
 }

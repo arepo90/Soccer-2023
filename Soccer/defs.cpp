@@ -4,14 +4,17 @@
 
 #include "defs.h"
 
+//---------------General functions---------------
+
 //Degree to decimal angle [-1, 1]
-double degToPoint(int x){
+double degToDec(int x){
+    if(x == NaN) return double(NaN);
     if(x == 180) return 1.0;
     return ( ((-abs(double(x)-180.0)) / (double(x)-180.0)) - 1.0 + double(x)/180.0 );
 }
 
 //Decimal angle to degree [0, 360]
-int pointToDeg(double x){
+int decToDeg(double x){
     if(x == 0.0) return 0;
     return ( 180.0 * (x + 1.0 - abs(x)/x) );
 }
@@ -34,7 +37,9 @@ int memRead(int target){
     return ans;
 }
 
-//Setup and pin declaration
+//---------------Hardware functions---------------
+
+//Motor setup and pin declaration
 Motor::Motor(int id, int EN, int PWM_A, int PWM_B, int defPow){
     this->id = id;
     this->EN = EN;
@@ -48,20 +53,20 @@ Motor::Motor(int id, int EN, int PWM_A, int PWM_B, int defPow){
 
 //Set motor power (-255 -> 255)
 void Motor::move(int Pow){
-    if(abs(Pow) == NaN) POW = defPow * (Pow / NaN);
+    if(abs(Pow) == NaN) POW = (Pow > 0 ? defPow : -defPow);
     else POW = Pow;
     digitalWriteFast(EN, HIGH);
     analogWrite(PWM_A, (POW > 0 ? 0 : -POW));
     analogWrite(PWM_B, (POW > 0 ? POW : 0));
 }
 
-//Motor stop (0: regular, 1: hard brake)
+//Motor stop (0 -> 255)
 void Motor::brake(int force){
     if(POW == 0) return;
     this->move((POW > 0 ? -force : force));
     delay(5);
     this->move(0);
-    delay(3);
+    delay(2);
 }
 
 //Test motor back and forth
@@ -80,7 +85,7 @@ void Motor::debug(){
     Serial.print(POW);
 }
 
-//Setup and pin declaration
+//Light sensor setup and pin declaration
 Light::Light(int id, int PIN_A, int PIN_B, bool check){
     this->id = id;
     this->PIN_A = PIN_A;
@@ -124,8 +129,8 @@ void Light::debug(){
     Serial.print(analogRead(PIN_B));
 }
 
-//Setup and pin declaration
-US::US(int id, int TRIG, int ECHO, bool arg, unsigned long timeOut){
+//US sensor setup and pin declaration
+US::US(int id, int TRIG, int ECHO, bool arg, ul timeOut){
     this->id = id;
     this->TRIG = TRIG;
     this->ECHO = ECHO;
@@ -137,7 +142,7 @@ US::US(int id, int TRIG, int ECHO, bool arg, unsigned long timeOut){
 //Distance read (cm)
 int US::read(){
     int dist = us_fake->read();
-    if(arg && dist == 357*(timeOut/20000UL)) return past;
+    if(arg && dist == 357*(timeOut/20000)) return past;
     past = dist;
     return dist;
 }
@@ -150,7 +155,7 @@ void US::debug(){
     Serial.print(this->read());
 }
 
-//Setup and I2C Communication
+//Compass sensor setup and I2C Communication
 Compass::Compass(int id, int C1, int C2, int LIM){
     this->id = id;
     this->LIM = LIM;
@@ -172,7 +177,7 @@ double Compass::read(int mode){
     int angle = word(buffer[1], buffer[0]) - OFFSET;
     if(angle < 0) angle += 360;
     if(mode == 0) return double(angle);
-    return degToPoint(angle);
+    return degToDec(angle);
 }
 
 //Initialize I2C communication
@@ -183,8 +188,8 @@ void Compass::init(){
     Wire.write(0x00);
     Wire.endTransmission();
     while(Wire.available() > 0){
-        Wire.read();
         Serial.print(".");
+        Wire.read();
     }
     OFFSET = this->read(0);
     Serial.println();
@@ -210,7 +215,7 @@ void Compass::debug(){
     Serial.print(OFFSET);
 }
 
-//Setup and I2C Communication
+//IR Seeker setup and I2C Communication
 IRSeeker::IRSeeker(int id, int IR1, int IR2){
     this->id = id;
     ADDRESS = IR1;
@@ -225,8 +230,8 @@ void IRSeeker::init(){
     Wire.write(0x00);
     Wire.endTransmission();
     while(Wire.available() > 0){
-        Wire.read();
         Serial.print(".");
+        Wire.read();
     }
     Serial.println();
     Serial.println("IR Seeker initialization complete");

@@ -1,13 +1,13 @@
 /*
-    Main code v0.16 - 20/03/2023 - Soccer 2023
+    Main code v0.17 - 22/03/2023 - Soccer 2023
     Esteban Martinez
 
     TODO: Continue testing functions (Global 50 power works)
 */
 
-
 #include "defs.h"
 
+//---------------Hardware definitions---------------
 
 //Motor 1 - Back Left
 #define EN_1 33
@@ -78,30 +78,39 @@
 
 const int robotId = 0; 
 
-//Hardware declarations
+//---------------Hardware classes declarations---------------
+
+//Motor declarations
 Motor M1(0, EN_1, PWM_A1, PWM_B1, POW1);
 Motor M2(1, EN_2, PWM_A2, PWM_B2, POW2);
 Motor M3(2, EN_3, PWM_A3, PWM_B3, POW3);
 Motor M4(3, EN_4, PWM_A4, PWM_B4, POW4);
 
+//Light sensor declarations
 //Last argument changes the limit's source (0: setLim(), 1: EEPROM)
-bool arg1 = 0;
+bool arg1 = false;
 Light L1(0, LUZ_A1, LUZ_B1, arg1);
 Light L2(1, LUZ_A2, LUZ_B2, arg1);
 Light L3(2, LUZ_A3, LUZ_B3, arg1);
 Light L4(3, LUZ_A4, LUZ_B4, arg1);
 
-//Optional last argument sets the timeout (range and delay change proportionally)
-bool arg2 = 20000UL;
-US U1(0, US_T1, US_E1, arg2);
-US U2(1, US_T2, US_E2, arg2);
+//Ultrasonic sensor declarations
+//Time argument sets the timeout (range and delay change proportionally)
+unsigned long time = 20000;
+bool arg2 = false;
+US U1(0, US_T1, US_E1, arg2, time);
+US U2(1, US_T2, US_E2, arg2, time);
 
+//Compass sensor declarations
+//Last argument sets limit for north in degrees (same for left and right)
 Compass Comp(0, C1, C2, C_LIM);
 
+//IR Seeker declarations
 IRSeeker IR(0, IR1, IR2);
 
 
-//Main code
+//---------------Main code---------------
+
 void setup(){
     globalInit(0);
     if(!arg1){

@@ -1,7 +1,9 @@
 /*
-    Main movement functions
+    Main movement dynamics
     Positive power rotates counterclockwise
 */
+
+//---------------Movement functions---------------
 
 //Stop movement (0: regular, 1: hard brake)
 void stp(int mode){
@@ -67,7 +69,7 @@ void lefDiag(){
     M4.move(0);
 }
 
-//Rotate with given DEF (DEF > 0 is counterclockwise)
+//Rotate with given power
 void rotate(int n){
     M1.move(n);
     M2.move(n);
@@ -75,6 +77,7 @@ void rotate(int n){
     M4.move(n);
 }
 
+//Test all movements
 void movements(){
     rig();
     delay(500);
