@@ -35,12 +35,14 @@ class Motor{
         int EN;
         int PWM_A;
         int PWM_B;
-        int POW;
+        int POW = 0;
         int defPow;
         int id;
     public:
         Motor(int id, int EN, int PWM_A, int PWM_B, int defPow);
+        int getPow();
         void move(int Pow);
+        void update(int Pow);
         void brake(int force);
         void test();
         void debug();

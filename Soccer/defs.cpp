@@ -51,6 +51,10 @@ Motor::Motor(int id, int EN, int PWM_A, int PWM_B, int defPow){
     pinModeFast(PWM_B, OUTPUT);
 }
 
+int Motor::getPow(){
+    return POW;
+}
+
 //Set motor power (-255 -> 255)
 void Motor::move(int Pow){
     if(abs(Pow) == NaN) POW = (Pow > 0 ? defPow : -defPow);
@@ -60,11 +64,19 @@ void Motor::move(int Pow){
     analogWrite(PWM_B, (POW > 0 ? POW : 0));
 }
 
+//Update motor power (increases or decreases current power)
+void Motor::update(int Pow){
+    POW += Pow;
+    if(POW > 255) POW = 255;
+    else if(POW < -255) POW = -255;
+    this->move(POW);
+}
+
 //Motor stop (0 -> 255)
 void Motor::brake(int force){
     if(POW == 0) return;
     this->move((POW > 0 ? -force : force));
-    delay(5);
+    delay(2);
     this->move(0);
     delay(2);
 }

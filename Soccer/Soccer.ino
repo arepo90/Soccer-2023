@@ -1,5 +1,5 @@
 /*
-    Main code v0.17 - 22/03/2023 - Soccer 2023
+    Main code v0.18 - 23/03/2023 - Soccer 2023
     Esteban Martinez
 
     TODO: Continue testing functions (Global 50 power works)
@@ -58,25 +58,29 @@
 //Compass address, message and limit
 #define C1 0x01
 #define C2 0x44
-#define C_LIM 12
+#define C_LIM 5
 
 //IR Seeker address and message
 #define IR1 0x10 / 2
 #define IR2 0x49
 
 //Motor powers
-#define POW1 50
-#define POW2 50
-#define POW3 50
-#define POW4 50
+#define POW1 70
+#define POW2 70
+#define POW3 70
+#define POW4 70
 
 //Movement settings
 #define DEF NaN
 #define BRAKE 150
+#define FACTOR 4.0
 #define KPI 30
-#define KPF 120
+#define KPF 100
 
+//Helper variables
 const int robotId = 0; 
+unsigned long before = 0, now = 0;
+bool led = false;
 
 //---------------Hardware classes declarations---------------
 
@@ -123,5 +127,9 @@ void setup(){
 }
 
 void loop(){
-    movements();
+    tracker1();
+
+    
+
+    tracker2();
 }
