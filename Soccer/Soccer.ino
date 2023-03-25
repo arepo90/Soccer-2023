@@ -1,6 +1,6 @@
 /*
-    Main code v0.18 - 23/03/2023 - Soccer 2023
-    Esteban Martinez
+    Main code v0.19 - 24/03/2023 - Soccer 2023
+    by Esteban Martinez & ChatGPT
 
     TODO: Continue testing functions (Global 50 power works)
 */

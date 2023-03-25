@@ -10,13 +10,13 @@
 double degToDec(int x){
     if(x == NaN) return double(NaN);
     if(x == 180) return 1.0;
-    return ( ((-abs(double(x)-180.0)) / (double(x)-180.0)) - 1.0 + double(x)/180.0 );
+    return ( ((-fabs(double(x)-180.0)) / (double(x)-180.0)) - 1.0 + double(x)/180.0 );
 }
 
 //Decimal angle to degree [0, 360]
 int decToDeg(double x){
     if(x == 0.0) return 0;
-    return ( 180.0 * (x + 1.0 - abs(x)/x) );
+    return ( 180.0 * (x + 1.0 - fabs(x)/x) );
 }
 
 //Save 4-byte number to EEPROM at target slots (0-indexed)

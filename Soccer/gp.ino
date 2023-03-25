@@ -19,7 +19,7 @@ void vectorPath(double angle){
     if(error > 0.0) error -= double(C_LIM)/360.0;
     else error += double(C_LIM)/360.0;
     vectorControl(angle);
-    if(abs(error) > 0.0){
+    if(fabs(error) > 0.0){
         M1.update(int(abs(M1.getPow()) * error * FACTOR));
         M2.update(int(abs(M2.getPow()) * error * FACTOR));
         M3.update(int(abs(M3.getPow()) * error * FACTOR));
@@ -40,7 +40,7 @@ void gp(){
 //Orientation towards fake north (front)
 void orientation(){
     double angle = Comp.read(1);
-    rotate(int(angle * (KPF - KPI) + (angle / abs(angle)) * KPI));
+    rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
 }
 
 //Staying within boundaries (0: immediate response, 1: checks for change in IR)
