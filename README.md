@@ -2,7 +2,7 @@
 
 Creation date: Feb 8
 
-### First stable version: Mar 2
+First stable version: Mar 2
 
 ---
 
