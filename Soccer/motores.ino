@@ -5,13 +5,6 @@
 
 //---------------Movement functions---------------
 
-void updt(int p1, int p2, int p3, int p4){
-    M1.update(p1);
-    M2.update(p2);
-    M3.update(p3);
-    M4.update(p4);
-}
-
 //Stop movement (0: regular, 1: hard brake)
 void stp(int mode){
     if(mode == 0){

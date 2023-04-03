@@ -21,11 +21,11 @@ typedef unsigned long ul;
 
 //---------------General functions---------------
 
+bool checkDelay(int time);
 double degToDec(int x);
 int decToDeg(double x);
 void memSave(int n, int target);
 int memRead(int target);
-
 
 //---------------Hardware classes---------------
 
@@ -74,7 +74,7 @@ class US{
         int id;
         Ultrasonic* us_fake;
     public:
-        US(int id, int TRIG, int ECHO, bool arg, ul timeOut);
+        US(int id, int TRIG, int ECHO, ul timeOut);
         int read();
         void debug();
 };
@@ -91,6 +91,8 @@ class Compass{
         Compass(int id, int C1, int C2, int LIM);
         double read(int mode);
         bool north();
+        int getOffset();
+        void setOffset(int angle);
         void init();
         void debug();
 };

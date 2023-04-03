@@ -4,22 +4,12 @@
 
 //---------------General functions---------------
 
-//Tracker functions for program continuity
-void tracker1(){
-    if(now == 0 || (!led && now - before >= 500)){
-        digitalWrite(13, HIGH);
-        before = now;
-        led = true;
+//Tracker function for checking program continuity
+void tracker(){
+    if(checkDelay(500)){
+        digitalWriteFast(13, (led ? LOW : HIGH));
+        led = !led;
     }
-    now = millis();
-}
-void tracker2(){
-    if(led && now - before >= 500){
-        digitalWrite(13, LOW);
-        before = now;
-        led = false;
-    }
-    now = millis();
 }
 
 //Check if robot is within boundaries (0: outside, 1: inside)
@@ -29,7 +19,8 @@ bool inside(){
 
 //Initialize program (0: Default, 1: Compass, 2: IR, 3: All)
 void globalInit(int mode){
-    pinMode(13, OUTPUT);
+    pinModeFast(13, OUTPUT);
+    digitalWriteFast(13, HIGH);
     Serial.begin(9600);
     if(mode % 2 == 1) Comp.init();
     if(mode >= 2) IR.init();

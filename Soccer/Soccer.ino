@@ -1,8 +1,9 @@
 /*
-    Main code v0.19 - 24/03/2023 - Soccer 2023
-    by Esteban Martinez & ChatGPT
+    Main code v1.0 - 2/04/2023 - Soccer 2023
+    by Esteban Martinez & GPT-4
 
-    TODO: Continue testing functions (Global 50 power works)
+    FIRST STABLE VERSION
+    US AND LINE ARE STILL WIP
 */
 
 #include "defs.h"
@@ -36,7 +37,7 @@
 #define LUZ_A2 A0
 #define LUZ_B2 A2
 #define LIM_A2 636 
-#define LIM_B2 575
+#define LIM_B2 620
 //Light 3 - Front
 #define LUZ_A3 A3
 #define LUZ_B3 A8
@@ -63,6 +64,8 @@
 //IR Seeker address and message
 #define IR1 0x10 / 2
 #define IR2 0x49
+#define IR_LIM 30
+#define IR_CORR 45
 
 //Motor powers
 #define POW1 70
@@ -79,39 +82,36 @@
 
 //Helper variables
 const int robotId = 0; 
-unsigned long before = 0, now = 0;
-bool led = false;
+bool led = true;
 
 //---------------Hardware classes declarations---------------
 
 //Motor declarations
-Motor M1(0, EN_1, PWM_A1, PWM_B1, POW1);
-Motor M2(1, EN_2, PWM_A2, PWM_B2, POW2);
-Motor M3(2, EN_3, PWM_A3, PWM_B3, POW3);
-Motor M4(3, EN_4, PWM_A4, PWM_B4, POW4);
+Motor M1(1, EN_1, PWM_A1, PWM_B1, POW1);
+Motor M2(2, EN_2, PWM_A2, PWM_B2, POW2);
+Motor M3(3, EN_3, PWM_A3, PWM_B3, POW3);
+Motor M4(4, EN_4, PWM_A4, PWM_B4, POW4);
 
 //Light sensor declarations
 //Last argument changes the limit's source (0: setLim(), 1: EEPROM)
 bool arg1 = false;
-Light L1(0, LUZ_A1, LUZ_B1, arg1);
-Light L2(1, LUZ_A2, LUZ_B2, arg1);
-Light L3(2, LUZ_A3, LUZ_B3, arg1);
-Light L4(3, LUZ_A4, LUZ_B4, arg1);
+Light L1(1, LUZ_A1, LUZ_B1, arg1);
+Light L2(2, LUZ_A2, LUZ_B2, arg1);
+Light L3(3, LUZ_A3, LUZ_B3, arg1);
+Light L4(4, LUZ_A4, LUZ_B4, arg1);
 
 //Ultrasonic sensor declarations
 //Time argument sets the timeout (range and delay change proportionally)
-unsigned long time = 20000;
-bool arg2 = false;
-US U1(0, US_T1, US_E1, arg2, time);
-US U2(1, US_T2, US_E2, arg2, time);
+unsigned long timeout = 20000;
+US U1(1, US_T1, US_E1, timeout);
+US U2(2, US_T2, US_E2, timeout);
 
 //Compass sensor declarations
 //Last argument sets limit for north in degrees (same for left and right)
-Compass Comp(0, C1, C2, C_LIM);
+Compass Comp(1, C1, C2, C_LIM);
 
 //IR Seeker declarations
-IRSeeker IR(0, IR1, IR2);
-
+IRSeeker IR(1, IR1, IR2);
 
 //---------------Main code---------------
 
@@ -127,9 +127,9 @@ void setup(){
 }
 
 void loop(){
-    tracker1();
+    tracker();
 
     
 
-    tracker2();
+    tracker();
 }

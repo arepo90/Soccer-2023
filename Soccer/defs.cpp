@@ -4,7 +4,18 @@
 
 #include "defs.h"
 
+//Helper variables
+ul before = 0, now = 0;
+
 //---------------General functions---------------
+
+//Delay without stop (time in ms)
+bool checkDelay(int time){
+    now = millis();
+    if(now - before < time) return false;
+    else before = now;
+    return true;
+}
 
 //Degree to decimal angle [-1, 1]
 double degToDec(int x){
@@ -113,8 +124,8 @@ Light::Light(int id, int PIN_A, int PIN_B, bool check){
 //Read sensor block state (0: None, 1: Outer, 2: Inner, 3: Both)
 int Light::read(){
     bool temp1 = false, temp2 = false;
-    if(analogRead(PIN_A) <= LIM_A) temp1 = true;
-    if(analogRead(PIN_B) <= LIM_B) temp2 = true;
+    if(analogRead(PIN_A) >= LIM_A) temp1 = true;
+    if(analogRead(PIN_B) >= LIM_B) temp2 = true;
     if(temp1 && temp2) return 3;
     else if(temp2) return 2;
     else if(temp1) return 1;
@@ -142,21 +153,17 @@ void Light::debug(){
 }
 
 //US sensor setup and pin declaration
-US::US(int id, int TRIG, int ECHO, bool arg, ul timeOut){
+US::US(int id, int TRIG, int ECHO, ul timeOut){
     this->id = id;
     this->TRIG = TRIG;
     this->ECHO = ECHO;
     this->timeOut = timeOut;
-    this->arg = arg;
     us_fake = new Ultrasonic(TRIG, ECHO, timeOut);
 }
 
 //Distance read (cm)
 int US::read(){
-    int dist = us_fake->read();
-    if(arg && dist == 357*(timeOut/20000)) return past;
-    past = dist;
-    return dist;
+    return us_fake->read();
 }
 
 //Debug info in serial monitor
@@ -192,6 +199,21 @@ double Compass::read(int mode){
     return degToDec(angle);
 }
 
+//Check if compass is pointing towards (fake) north
+bool Compass::north(){
+    int angle = this->read(0);
+    if(angle < LIM || angle > 360-LIM) return true;
+    else return false;
+}
+
+int Compass::getOffset(){
+    return OFFSET;
+}
+
+void Compass::setOffset(int angle){
+    OFFSET = angle;
+}
+
 //Initialize I2C communication
 void Compass::init(){
     Serial.print("Compass initialization started");
@@ -206,13 +228,6 @@ void Compass::init(){
     OFFSET = this->read(0);
     Serial.println();
     Serial.println("Compass initialization complete");
-}
-
-//Check if compass is pointing towards (fake) north
-bool Compass::north(){
-    int angle = this->read(0);
-    if(angle < LIM || angle > 360-LIM) return true;
-    else return false;
 }
 
 //Debug info in serial monitor
@@ -263,13 +278,15 @@ int IRSeeker::read(int mode){
     while(Wire.available() > 0){
         Wire.read();
     }
-    if(mode == 0) return buffer[0];
+    if(mode == 0) return (10 - buffer[0]) % 10;
     if(buffer[0] == 0) return NaN;
-    return (buffer[0] * 30 - 150);
+    return -(buffer[0] * 30 - 150);
 }
 
 //Debug info in serial monitor
 void IRSeeker::debug(){
     Serial.print(" IR: ");
     Serial.print(this->read(0));
+    Serial.print(" Angle: ");
+    Serial.print(this->read(1));
 }

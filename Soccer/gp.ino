@@ -6,7 +6,7 @@
 //----------Movement helper functions----------
 
 //Motor control for a given angle [-1, 1]
-void vectorControl(double angle){
+void followPath(double angle){
     M1.move(int(POW1 * sin(PI*angle - PI/4.0)));
     M2.move(int(POW2 * sin(PI*angle - 3.0*PI/4.0)));
     M3.move(int(POW3 * sin(PI*angle + 3.0*PI/4.0)));
@@ -14,11 +14,11 @@ void vectorControl(double angle){
 }
 
 //Follow path for given direction with angle correction [-1, 1]
-void vectorPath(double angle){
+void vectorControl(double angle){
     double error = Comp.read(1);
     if(error > 0.0) error -= double(C_LIM)/360.0;
     else error += double(C_LIM)/360.0;
-    vectorControl(angle);
+    followPath(angle);
     if(fabs(error) > 0.0){
         M1.update(int(abs(M1.getPow()) * error * FACTOR));
         M2.update(int(abs(M2.getPow()) * error * FACTOR));
@@ -94,7 +94,7 @@ void line(int state){
 
 //Returning when no ball detected - WIP - Ultrasonics are NOT reliable
 void comeback(){
-    bwd();
+    vectorControl(1.0);
 }
 
 //Ball tracking - WIP - Check cases for best performance
@@ -124,9 +124,15 @@ void ball(){
     }
 }
 
-//Ball tracking with vector control - WIP
-void ballVector(){
+//Ball tracking with vector control (0: default, 1: diagonal correction) - WIP
+void ballVector(int mode){
     double angle = degToDec(IR.read(1));
-    if(angle != double(NaN)) vectorPath(angle);
-    else comeback();
+    if(angle == double(NaN)) comeback();
+    else if(mode == 0 || (angle >= -IR_LIM && angle <= IR_LIM)) vectorControl(angle);
+    else vectorControl(angle + (angle > 0 ? IR_CORR : -IR_CORR));
+}
+
+void circleFunc(int updt){
+    if(checkDelay(100)) Comp.setOffset((Comp.getOffset() + updt) % 360);
+    vectorControl(-0.5);
 }
