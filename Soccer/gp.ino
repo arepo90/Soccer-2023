@@ -31,9 +31,8 @@ void vectorControl(double angle){
 
 //Strategy priority list
 void gp(){
-    if(!Comp.north()) orientation();
-    else if(!inside()) line(0);
-    else if(IR.read(0)) ball();
+    if(!inside()) line(0);
+    else if(IR.read(0)) ball(0);
     else comeback();
 }
 
@@ -45,8 +44,8 @@ void orientation(){
 
 //Staying within boundaries (0: immediate response, 1: checks for change in IR)
 //The short delay may or may not be necessary for state 1 - WIP
-void line(int state){
-    if(state == 0){
+void line(int mode){
+    if(mode == 0){
         if(L1.read()) fwd();
         else if(L2.read()) rig();
         else if(L3.read()) bwd();
@@ -97,39 +96,38 @@ void comeback(){
     vectorControl(1.0);
 }
 
-//Ball tracking - WIP - Check cases for best performance
-void ball(){
-    switch(IR.read(0)){
-        case 0:
-            comeback();
-            break;
-        case 1: case 9:
-            bwd();
-            break;
-        case 2: case 3:
-            lef();
-            break;
-        case 4:
-            lefDiag();
-            break;
-        case 5:
-            fwd();
-            break;
-        case 6:
-            rigDiag();
-            break;
-        case 7: case 8:
-            rig();
-            break;
+//Ball tracking (0: Move to ball angle, 1: Particular cases)
+void ball(int mode){
+    if(mode == 0){
+        double angle = IR.read(1);
+        if(angle == double(NaN)) comeback();
+        else vectorControl(degToDec(angle));
     }
-}
-
-//Ball tracking with vector control (0: default, 1: diagonal correction) - WIP
-void ballVector(int mode){
-    double angle = degToDec(IR.read(1));
-    if(angle == double(NaN)) comeback();
-    else if(mode == 0 || (angle >= -IR_LIM && angle <= IR_LIM)) vectorControl(angle);
-    else vectorControl(angle + (angle > 0 ? IR_CORR : -IR_CORR));
+    else{
+        switch(IR.read(0)){
+            case 0:
+                comeback();
+                break;
+            case 1: case 9:
+                bwd();
+                break;
+            case 2: case 3:
+                lef();
+                break;
+            case 4:
+                lefDiag();
+                break;
+            case 5:
+                fwd();
+                break;
+            case 6:
+                rigDiag();
+                break;
+            case 7: case 8:
+                rig();
+                break;
+        }
+    }
 }
 
 void circleFunc(int updt){

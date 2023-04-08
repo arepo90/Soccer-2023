@@ -1,8 +1,8 @@
 /*
-    Main code v1.0 - 2/04/2023 - Soccer 2023
+    Main code v1.1 - 8/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    FIRST STABLE VERSION
+    STABLE VERSION
     US AND LINE ARE STILL WIP
 */
 
