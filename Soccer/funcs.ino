@@ -4,6 +4,16 @@
 
 //---------------General functions---------------
 
+//Helper variables
+ul before = 0, now = 0;
+//Delay without stop (time in ms)
+bool checkDelay(int time){
+    now = millis();
+    if(now - before < time) return false;
+    else before = now;
+    return true;
+}
+
 //Tracker function for checking program continuity
 void tracker(){
     if(checkDelay(500)){

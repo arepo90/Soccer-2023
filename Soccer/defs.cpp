@@ -4,18 +4,7 @@
 
 #include "defs.h"
 
-//Helper variables
-ul before = 0, now = 0;
-
 //---------------General functions---------------
-
-//Delay without stop (time in ms)
-bool checkDelay(int time){
-    now = millis();
-    if(now - before < time) return false;
-    else before = now;
-    return true;
-}
 
 //Degree to decimal angle [-1, 1]
 double degToDec(int x){

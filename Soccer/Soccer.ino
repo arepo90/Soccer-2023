@@ -1,8 +1,8 @@
 /*
-    Main code v1.1 - 8/04/2023 - Soccer 2023
+    Main code v1.1 rev. 2 - 8/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    STABLE VERSION
+    UNSTABLE VERSION
     US AND LINE ARE STILL WIP
 */
 
@@ -31,23 +31,23 @@
 //Light 1 - Back
 #define LUZ_A1 A5
 #define LUZ_B1 A1
-#define LIM_A1 845 
-#define LIM_B1 709
+#define LIM_A1 800
+#define LIM_B1 850
 //Light 2 - Left
 #define LUZ_A2 A0
 #define LUZ_B2 A2
-#define LIM_A2 636 
-#define LIM_B2 620
+#define LIM_A2 620
+#define LIM_B2 600
 //Light 3 - Front
 #define LUZ_A3 A3
 #define LUZ_B3 A8
-#define LIM_A3 675 
-#define LIM_B3 680
+#define LIM_A3 630
+#define LIM_B3 630
 //Light 4 - Right
 #define LUZ_A4 A4
 #define LUZ_B4 A6
-#define LIM_A4 862
-#define LIM_B4 855
+#define LIM_A4 830
+#define LIM_B4 820
 
 //Ultrasonic 1 - Left
 #define US_E1 34
@@ -68,17 +68,18 @@
 #define IR_CORR 45
 
 //Motor powers
-#define POW1 70
-#define POW2 70
-#define POW3 70
-#define POW4 70
+#define POW1 50
+#define POW2 50
+#define POW3 50
+#define POW4 50
 
 //Movement settings
 #define DEF NaN
 #define BRAKE 150
-#define FACTOR 4.0
+#define FACTOR 3.0
 #define KPI 30
 #define KPF 100
+#define DEL 50
 
 //Helper variables
 const int robotId = 0; 
@@ -116,7 +117,7 @@ IRSeeker IR(1, IR1, IR2);
 //---------------Main code---------------
 
 void setup(){
-    globalInit(0);
+    globalInit(3);
     if(!arg1){
         L1.setLim(LIM_A1, LIM_B1);
         L2.setLim(LIM_A2, LIM_B2);
@@ -127,9 +128,12 @@ void setup(){
 }
 
 void loop(){
-    tracker();
+    //tracker();
 
-    
+    gp();
+    IR.debug();
+    Comp.debug();
+    Serial.println();
 
-    tracker();
+    //tracker();
 }

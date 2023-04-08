@@ -23,34 +23,34 @@ void stp(int mode){
 
 //Move forward
 void fwd(){
-    M1.move(-DEF);
-    M2.move(-DEF);
-    M3.move(DEF);
-    M4.move(DEF);
+    M1.move(-2*DEF);
+    M2.move(-2*DEF);
+    M3.move(2*DEF);
+    M4.move(2*DEF);
 }
 
 //Move backwards
 void bwd(){
-    M1.move(DEF);
-    M2.move(DEF);
-    M3.move(-DEF);
-    M4.move(-DEF);
+    M1.move(2*DEF);
+    M2.move(2*DEF);
+    M3.move(-2*DEF);
+    M4.move(-2*DEF);
 }
 
 //Move left
 void lef(){
-    M1.move(-DEF);
-    M2.move(DEF);
-    M3.move(DEF);
-    M4.move(-DEF);
+    M1.move(-2*DEF);
+    M2.move(2*DEF);
+    M3.move(2*DEF);
+    M4.move(-2*DEF);
 }
 
 //Move right
 void rig(){
-    M1.move(DEF);
-    M2.move(-DEF);
-    M3.move(-DEF);
-    M4.move(DEF);
+    M1.move(2*DEF);
+    M2.move(-2*DEF);
+    M3.move(-2*DEF);
+    M4.move(2*DEF);
 }
 
 //Move towards the backward right diagonal

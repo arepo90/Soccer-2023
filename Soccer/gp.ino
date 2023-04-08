@@ -31,9 +31,8 @@ void vectorControl(double angle){
 
 //Strategy priority list
 void gp(){
-    if(!inside()) line(0);
-    else if(IR.read(0)) ball(0);
-    else comeback();
+    line(0);
+    if(inside()) ball(0);
 }
 
 //Orientation towards fake north (front)
@@ -46,10 +45,30 @@ void orientation(){
 //The short delay may or may not be necessary for state 1 - WIP
 void line(int mode){
     if(mode == 0){
-        if(L1.read()) fwd();
-        else if(L2.read()) rig();
-        else if(L3.read()) bwd();
-        else if(L4.read()) lef();
+        if(L3.read()){
+            /*before = millis();
+            while(!checkDelay(DEL)){
+              vectorControl(1.0);
+            }*/
+            bwd();
+            delay(DEL);
+        }
+        else if(L1.read()){
+            /*before = millis();
+            while(!checkDelay(DEL)){
+              vectorControl(0.0);
+            }*/
+            fwd();
+            delay(DEL);
+        }
+        else if(L2.read()){
+            rig();
+            /*if(L2.read() > 1)*/ delay(DEL);
+        }
+        else if(L4.read()){
+            lef();
+            /*if(L4.read() > 1)*/ delay(DEL);
+        }
     }
     else{
         if(L1.read() == 1){
