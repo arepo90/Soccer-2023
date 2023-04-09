@@ -1,5 +1,5 @@
 /*
-    Main code v1.1 rev. 2 - 8/04/2023 - Soccer 2023
+    Main code v1.1 rev. 3 - 8/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
     UNSTABLE VERSION
@@ -32,22 +32,22 @@
 #define LUZ_A1 A5
 #define LUZ_B1 A1
 #define LIM_A1 800
-#define LIM_B1 850
+#define LIM_B1 800
 //Light 2 - Left
 #define LUZ_A2 A0
 #define LUZ_B2 A2
-#define LIM_A2 620
+#define LIM_A2 600
 #define LIM_B2 600
 //Light 3 - Front
 #define LUZ_A3 A3
 #define LUZ_B3 A8
-#define LIM_A3 630
-#define LIM_B3 630
+#define LIM_A3 600
+#define LIM_B3 600
 //Light 4 - Right
 #define LUZ_A4 A4
 #define LUZ_B4 A6
-#define LIM_A4 830
-#define LIM_B4 820
+#define LIM_A4 800
+#define LIM_B4 800
 
 //Ultrasonic 1 - Left
 #define US_E1 34
@@ -68,10 +68,10 @@
 #define IR_CORR 45
 
 //Motor powers
-#define POW1 50
-#define POW2 50
-#define POW3 50
-#define POW4 50
+#define POW1 40
+#define POW2 40
+#define POW3 40
+#define POW4 40
 
 //Movement settings
 #define DEF NaN
@@ -79,9 +79,10 @@
 #define FACTOR 3.0
 #define KPI 30
 #define KPF 100
-#define DEL 50
+#define DEL 30
 
 //Helper variables
+ul trackNow = 0, trackBefore = 0;
 const int robotId = 0; 
 bool led = true;
 
@@ -128,12 +129,11 @@ void setup(){
 }
 
 void loop(){
-    //tracker();
+    tracker();
 
     gp();
-    IR.debug();
-    Comp.debug();
+    lightDebug();
     Serial.println();
 
-    //tracker();
+    tracker();
 }

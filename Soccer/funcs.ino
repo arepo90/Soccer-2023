@@ -6,6 +6,7 @@
 
 //Helper variables
 ul before = 0, now = 0;
+
 //Delay without stop (time in ms)
 bool checkDelay(int time){
     now = millis();
@@ -16,9 +17,11 @@ bool checkDelay(int time){
 
 //Tracker function for checking program continuity
 void tracker(){
-    if(checkDelay(500)){
+    trackNow = millis();
+    if(trackNow - trackBefore >= 500){
         digitalWriteFast(13, (led ? LOW : HIGH));
         led = !led;
+        trackBefore = trackNow;
     }
 }
 
@@ -27,7 +30,7 @@ bool inside(){
     return !(L1.read() + L2.read() + L3.read() + L4.read());
 }
 
-//Initialize program (0: Default, 1: Compass, 2: IR, 3: All)
+//Initialize program (0: Serial port, 1: Compass, 2: IR, 3: All)
 void globalInit(int mode){
     pinModeFast(13, OUTPUT);
     digitalWriteFast(13, HIGH);
@@ -84,5 +87,4 @@ void globalDebug(){
     usDebug();
     Comp.debug();
     IR.debug();
-    Serial.println();
 }

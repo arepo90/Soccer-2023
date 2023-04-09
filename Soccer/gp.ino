@@ -29,10 +29,10 @@ void vectorControl(double angle){
 
 //---------------Game functions---------------
 
-//Strategy priority list
+//Game plan
 void gp(){
-    line(0);
-    if(inside()) ball(0);
+    if(!inside()) line(0);
+    else vectorControl(0.0);
 }
 
 //Orientation towards fake north (front)
@@ -46,28 +46,20 @@ void orientation(){
 void line(int mode){
     if(mode == 0){
         if(L3.read()){
-            /*before = millis();
-            while(!checkDelay(DEL)){
-              vectorControl(1.0);
-            }*/
             bwd();
             delay(DEL);
         }
         else if(L1.read()){
-            /*before = millis();
-            while(!checkDelay(DEL)){
-              vectorControl(0.0);
-            }*/
             fwd();
             delay(DEL);
         }
         else if(L2.read()){
             rig();
-            /*if(L2.read() > 1)*/ delay(DEL);
+            delay(DEL);
         }
         else if(L4.read()){
             lef();
-            /*if(L4.read() > 1)*/ delay(DEL);
+            delay(DEL);
         }
     }
     else{
