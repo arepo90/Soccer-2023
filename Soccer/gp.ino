@@ -31,8 +31,7 @@ void vectorControl(double angle){
 
 //Game plan
 void gp(){
-    if(!inside()) line(0);
-    else vectorControl(0.0);
+    line(0);
 }
 
 //Orientation towards fake north (front)
@@ -46,20 +45,25 @@ void orientation(){
 void line(int mode){
     if(mode == 0){
         if(L3.read()){
+            //Serial.println("adelante");
             bwd();
-            delay(DEL);
         }
         else if(L1.read()){
+            //Serial.println("atras");
             fwd();
-            delay(DEL);
         }
         else if(L2.read()){
+            //Serial.println("izquierda");
             rig();
-            delay(DEL);
         }
         else if(L4.read()){
+            //Serial.println("derecha");
             lef();
-            delay(DEL);
+        }
+        else{
+            //Serial.println("nada");
+            ball(0);
+            //fwd();
         }
     }
     else{
@@ -112,7 +116,11 @@ void ball(int mode){
     if(mode == 0){
         double angle = IR.read(1);
         if(angle == double(NaN)) comeback();
-        else vectorControl(degToDec(angle));
+        else{
+            if(angle > 60.0) angle += 30.0;
+            else if(angle < -60.0) angle -= 30.0;
+            vectorControl(degToDec(angle));
+        }
     }
     else{
         switch(IR.read(0)){

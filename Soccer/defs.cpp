@@ -178,7 +178,9 @@ double Compass::read(int mode){
     Wire.write(MSG);
     Wire.endTransmission();
     Wire.requestFrom(ADDRESS, 2); 
-    while(Wire.available() < 2);
+    digitalWriteFast(13, HIGH);
+    while(Wire.available() < 2) Serial.println("-");
+    digitalWriteFast(13, LOW);
     for(byte i = 0; i < 2; i++){
         buffer[i] = Wire.read();
     }
@@ -211,7 +213,6 @@ void Compass::init(){
     Wire.write(0x00);
     Wire.endTransmission();
     while(Wire.available() > 0){
-        Serial.print(".");
         Wire.read();
     }
     OFFSET = this->read(0);
@@ -260,7 +261,9 @@ int IRSeeker::read(int mode){
     Wire.write(MSG);
     Wire.endTransmission();
     Wire.requestFrom(ADDRESS, 6);
+    digitalWriteFast(13, HIGH);
     while(Wire.available() < 6);
+    digitalWriteFast(13, LOW);
     for(byte i = 0; i < 6; i++){
         buffer[i] = Wire.read();
     }

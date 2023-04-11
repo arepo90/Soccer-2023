@@ -35,7 +35,7 @@ void globalInit(int mode){
     pinModeFast(13, OUTPUT);
     digitalWriteFast(13, HIGH);
     Serial.begin(9600);
-    Serial.print("Tacos ");
+    Serial.println("Tacos ");
     if(mode % 2 == 1) Comp.init();
     if(mode >= 2) IR.init();
     Serial.print("de a ");

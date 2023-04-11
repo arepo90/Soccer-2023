@@ -1,5 +1,5 @@
 /*
-    Main code v1.1 rev. 3 - 8/04/2023 - Soccer 2023
+    Main code v1.1 rev. 4 - 11/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
     UNSTABLE VERSION
@@ -68,18 +68,21 @@
 #define IR_CORR 45
 
 //Motor powers
-#define POW1 40
-#define POW2 40
-#define POW3 40
-#define POW4 40
+#define POW1 80
+#define POW2 80
+#define POW3 80
+#define POW4 80
 
 //Movement settings
 #define DEF NaN
-#define BRAKE 150
+#define BRAKE 200
 #define FACTOR 3.0
 #define KPI 30
 #define KPF 100
 #define DEL 30
+
+#define S String
+
 
 //Helper variables
 ul trackNow = 0, trackBefore = 0;
@@ -104,7 +107,7 @@ Light L4(4, LUZ_A4, LUZ_B4, arg1);
 
 //Ultrasonic sensor declarations
 //Time argument sets the timeout (range and delay change proportionally)
-unsigned long timeout = 20000;
+ul timeout = 20000;
 US U1(1, US_T1, US_E1, timeout);
 US U2(2, US_T2, US_E2, timeout);
 
@@ -129,11 +132,9 @@ void setup(){
 }
 
 void loop(){
-    tracker();
+    //tracker();
 
     gp();
-    lightDebug();
-    Serial.println();
-
-    tracker();
+    
+    //tracker();
 }
