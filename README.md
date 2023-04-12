@@ -16,7 +16,7 @@ Sensors may have different ways to be read or types of data that they return, th
 
 All objects are initialised through their constructors at the start of the program, with their main data as arguments, however, certain sensors require further actions or measurements before they can be used. In general, all objects have a private **ID** to differentiate them from similar objects, as well as **debug()** methods that output all relevant information to the *Serial monitor*.
 ### Motors
-Each motor is controlled by three pins, an **Enable (EN)** and two **Pulse width modulation (PWM)** pins. For the motor to be active, the **EN** pin must be set to a digital *HIGH*, while only one of the **PWM** pins must have a positive analog power (1 -> 255), with the other set at 0. To change the direction of turn, the **PWM** pins must be swapped. The object has 
+Each motor is controlled by three pins, an **Enable (EN)** and two **Pulse width modulation (PWM)** pins. For the motor to be active, the **EN** pin must be set to a digital *HIGH*, while only one of the **PWM** pins must have a positive analog power (1 -> 255), with the other set at 0. To change the direction of turn, the **PWM** pins must be swapped.
 
 Each motor is treated as a different object, called M1, M2, M3 and M4, starting with the bottom left, going clockwise. When each object is constructed, the corresponding pins are set as *outputs* and the private pin numbers are defined. In addition to this, a **Default Power (defPow)** is set for each motor, which will serve as the the base speed. All pins and powers can be changed in the *#define* section at the start of the program.
 
