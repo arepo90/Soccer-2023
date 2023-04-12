@@ -15,6 +15,8 @@ All sensors and devices are referenced as objects (classes) with methods and pro
 Sensors may have different ways to be read or types of data that they return, therefore, these are chosen through the parameters of the main **read()** methods.
 
 All objects are initialised through their constructors at the start of the program, with their main data as arguments, however, certain sensors require further actions or measurements before they can be used. In general, all objects have a private **ID** to differentiate them from similar objects, as well as **debug()** methods that output all relevant information to the *Serial monitor*.
+
+In general, if a varibale is in all-caps, it refers to an object's private variable, otherwise, it is most likely local.
 ### Motors
 Each motor is controlled by three pins, an **Enable (EN)** and two **Pulse width modulation (PWM)** pins. For the motor to be active, the **EN** pin must be set to a digital *HIGH*, while only one of the **PWM** pins must have a positive analog power (1 -> 255), with the other set at 0. To change the direction of turn, the **PWM** pins must be swapped.
 
@@ -29,7 +31,7 @@ An underused function is that of **brake(int force)**, due to its limitations wh
 **test(int Pow)** can be called to test the motor. It will move with the power indicated in the argument for 1 second, then it will change directions with the same power for another second.
 
 ### Light sensors
-Each sensor block is treated as a different object, meaning that every object is in charge of two analog pins. They each output an 8-byte number (0 -> 1024) that represents the current level of luminosity being received by the photoresistor. In this case, a simple threshold is used to determine when a line is touched.
+Each sensor block is treated as a different object, meaning that every object is in charge of two analog pins. They are called L1, L2, L3 and L4, starting from the back and moving counterclockwise. They each output an 8-byte number (0 -> 1024) that represents the current level of luminosity being received by the photoresistor. In this case, a simple threshold is used to determine when a line is touched.
 
 Along with the constructors, there is a special boolean argument (arg1) that is used to determine the source of the threshold limit. A *false* value will take the limits from the *#define* section at the start, while a *true* value will take them from the Arduino's EEPROM memory through the **memRead()** and **memSave()** helper functions (documented later in the text).
 
