@@ -173,18 +173,17 @@ Compass::Compass(int id, int C1, int C2, int LIM){
 
 //Angle read by mode (0: [0, 360], 1: [-1, 1])
 double Compass::read(int mode){
+    digitalWriteFast(13, HIGH);
     byte buffer[2];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
     Wire.endTransmission();
     Wire.requestFrom(ADDRESS, 2); 
-    digitalWriteFast(13, HIGH);
-    while(Wire.available() < 2) Serial.println("-");
-    digitalWriteFast(13, LOW);
     for(byte i = 0; i < 2; i++){
         buffer[i] = Wire.read();
     }
     int angle = word(buffer[1], buffer[0]) - OFFSET;
+    digitalWriteFast(13, LOW);
     if(angle < 0) angle += 360;
     if(mode == 0) return double(angle);
     return degToDec(angle);
@@ -207,7 +206,7 @@ void Compass::setOffset(int angle){
 
 //Initialize I2C communication
 void Compass::init(){
-    Serial.print("Compass initialization started");
+    Serial.println("Compass initialization started");
     Wire.begin();
     Wire.beginTransmission(ADDRESS);
     Wire.write(0x00);
@@ -216,7 +215,6 @@ void Compass::init(){
         Wire.read();
     }
     OFFSET = this->read(0);
-    Serial.println();
     Serial.println("Compass initialization complete");
 }
 
@@ -241,38 +239,56 @@ IRSeeker::IRSeeker(int id, int IR1, int IR2){
 
 //Initialize I2C communication
 void IRSeeker::init(){
-    Serial.print("IR Seeker initialization started");
+    Serial.println("IR Seeker initialization started");
     Wire.begin();
     Wire.beginTransmission(ADDRESS);
     Wire.write(0x00);
     Wire.endTransmission();
     while(Wire.available() > 0){
-        Serial.print(".");
         Wire.read();
     }
-    Serial.println();
     Serial.println("IR Seeker initialization complete");
 }
 
 //IR ball direction read by mode (0: [0, 9], 1: [-120, 120])
 int IRSeeker::read(int mode){
+    digitalWriteFast(13, HIGH);
+    byte buffer[6];
+    Wire.beginTransmission(ADDRESS);
+    Wire.write(MSG);
+    Wire.endTransmission();
+    //CHECK IF THIS WORKS WHEN ONLY 1 BYTE IS REQUESTED AND READ
+    Wire.requestFrom(ADDRESS, 6);
+    for(byte i = 0; i < 6; i++){
+        buffer[i] = Wire.read();
+    }
+    //CHECK IF THIS IS NECESSARY (PROB NOT)
+    while(Wire.available() > 0){
+        Wire.read();
+    }
+    digitalWriteFast(13, LOW);
+    if(mode == 0) return (10 - buffer[0]) % 10;
+    if(buffer[0] == 0) return NaN;
+    return -(buffer[0] * 30 - 150);
+}
+
+int IRSeeker::strength(){
+    digitalWriteFast(13, HIGH);
     byte buffer[6];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
     Wire.endTransmission();
     Wire.requestFrom(ADDRESS, 6);
-    digitalWriteFast(13, HIGH);
-    while(Wire.available() < 6);
-    digitalWriteFast(13, LOW);
     for(byte i = 0; i < 6; i++){
         buffer[i] = Wire.read();
     }
     while(Wire.available() > 0){
         Wire.read();
     }
-    if(mode == 0) return (10 - buffer[0]) % 10;
-    if(buffer[0] == 0) return NaN;
-    return -(buffer[0] * 30 - 150);
+    digitalWriteFast(13, LOW);
+    if(buffer[0] == 0) return 0;
+    else if(buffer[0] % 2 == 0) return (buffer[buffer[0]/2] + buffer[(buffer[0]/2)+1]) / 2;
+    else return buffer[(buffer[0]/2)+1];
 }
 
 //Debug info in serial monitor

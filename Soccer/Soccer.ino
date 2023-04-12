@@ -1,9 +1,14 @@
 /*
-    Main code v1.1 rev. 4 - 11/04/2023 - Soccer 2023
+    Main code v1.1.5 - 11/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    UNSTABLE VERSION
-    US AND LINE ARE STILL WIP
+    HIGHLY UNSTABLE VERSION
+
+    #1 PRIORITY: FIX I2C COMMS
+    IRSeeker seems to be the main issue
+    Compass is not completely fixed yet
+
+    US IS STILL WIP
 */
 
 #include "defs.h"
@@ -81,9 +86,6 @@
 #define KPF 100
 #define DEL 30
 
-#define S String
-
-
 //Helper variables
 ul trackNow = 0, trackBefore = 0;
 const int robotId = 0; 
@@ -122,19 +124,9 @@ IRSeeker IR(1, IR1, IR2);
 
 void setup(){
     globalInit(3);
-    if(!arg1){
-        L1.setLim(LIM_A1, LIM_B1);
-        L2.setLim(LIM_A2, LIM_B2);
-        L3.setLim(LIM_A3, LIM_B3);
-        L4.setLim(LIM_A4, LIM_B4);
-    }
     Serial.println("3 pesos");
 }
 
 void loop(){
-    //tracker();
-
     gp();
-    
-    //tracker();
 }

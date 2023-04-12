@@ -133,7 +133,7 @@ void ball(int mode){
             case 2: case 3:
                 lef();
                 break;
-            case 4:
+            case 4:-
                 lefDiag();
                 break;
             case 5:

@@ -108,6 +108,7 @@ class IRSeeker{
     public:
         IRSeeker(int id, int IR1, int IR2);
         int read(int mode);
+        int strength();
         void init();
         void debug();
 };

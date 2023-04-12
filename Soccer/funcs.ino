@@ -38,6 +38,12 @@ void globalInit(int mode){
     Serial.println("Tacos ");
     if(mode % 2 == 1) Comp.init();
     if(mode >= 2) IR.init();
+    if(!arg1){
+        L1.setLim(LIM_A1, LIM_B1);
+        L2.setLim(LIM_A2, LIM_B2);
+        L3.setLim(LIM_A3, LIM_B3);
+        L4.setLim(LIM_A4, LIM_B4);
+    }
     Serial.print("de a ");
 }
 
