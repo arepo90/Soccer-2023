@@ -1,14 +1,16 @@
 /*
-    Main code v1.1.5 - 11/04/2023 - Soccer 2023
+    Main code v1.1.6 - 22/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
     HIGHLY UNSTABLE VERSION
 
     #1 PRIORITY: FIX I2C COMMS
     IRSeeker seems to be the main issue
-    Compass is not completely fixed yet
+    Compass appears to be fixed now? idfk
+    Maybe fast reading was the issue?
+    digitalWriteFast.h is cursed? what is going on
 
-    US IS STILL WIP
+    US will be ready when they're ready
 */
 
 #include "defs.h"
@@ -87,7 +89,7 @@
 #define DEL 30
 
 //Helper variables
-ul trackNow = 0, trackBefore = 0;
+ul trackNow = 0, trackBefore = 0, cont = 0;
 const int robotId = 0; 
 bool led = true;
 
@@ -109,7 +111,7 @@ Light L4(4, LUZ_A4, LUZ_B4, arg1);
 
 //Ultrasonic sensor declarations
 //Time argument sets the timeout (range and delay change proportionally)
-ul timeout = 20000;
+ul timeout = 300;
 US U1(1, US_T1, US_E1, timeout);
 US U2(2, US_T2, US_E2, timeout);
 
@@ -128,5 +130,9 @@ void setup(){
 }
 
 void loop(){
-    gp();
+    //gp();
+    Comp.debug();
+    IR.debug();
+    Serial.println();
+    delayMicroseconds(500);
 }

@@ -23,18 +23,18 @@ void stp(int mode){
 
 //Move forward
 void fwd(){
-    M1.move(-3*DEF);
-    M2.move(-3*DEF);
-    M3.move(3*DEF);
-    M4.move(3*DEF);
+    M1.move(-2*DEF);
+    M2.move(-2*DEF);
+    M3.move(2*DEF);
+    M4.move(2*DEF);
 }
 
 //Move backwards
 void bwd(){
-    M1.move(3*DEF);
-    M2.move(3*DEF);
-    M3.move(-3*DEF);
-    M4.move(-3*DEF);
+    M1.move(2*DEF);
+    M2.move(2*DEF);
+    M3.move(-2*DEF);
+    M4.move(-2*DEF);
 }
 
 //Move left

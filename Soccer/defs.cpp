@@ -46,9 +46,9 @@ Motor::Motor(int id, int EN, int PWM_A, int PWM_B, int defPow){
     this->PWM_A = PWM_A;
     this->PWM_B = PWM_B;
     this->defPow = defPow;
-    pinModeFast(EN, OUTPUT);
-    pinModeFast(PWM_A, OUTPUT);
-    pinModeFast(PWM_B, OUTPUT);
+    pinMode(EN, OUTPUT);
+    pinMode(PWM_A, OUTPUT);
+    pinMode(PWM_B, OUTPUT);
 }
 
 int Motor::getPow(){
@@ -59,7 +59,7 @@ int Motor::getPow(){
 void Motor::move(int Pow){
     if(abs(Pow) == NaN) POW = (Pow > 0 ? defPow : -defPow);
     else POW = Pow;
-    digitalWriteFast(EN, HIGH);
+    digitalWrite(EN, HIGH);
     analogWrite(PWM_A, (POW > 0 ? 0 : -POW));
     analogWrite(PWM_B, (POW > 0 ? POW : 0));
 }
@@ -106,8 +106,8 @@ Light::Light(int id, int PIN_A, int PIN_B, bool check){
         LIM_A = memRead(id*2);
         LIM_B = memRead((id*2)+1);
     }
-    pinModeFast(PIN_A, INPUT);
-    pinModeFast(PIN_B, INPUT);
+    pinMode(PIN_A, INPUT);
+    pinMode(PIN_B, INPUT);
 }
 
 //Read sensor block state (0: None, 1: Outer, 2: Inner, 3: Both)
@@ -147,12 +147,12 @@ US::US(int id, int TRIG, int ECHO, ul timeOut){
     this->TRIG = TRIG;
     this->ECHO = ECHO;
     this->timeOut = timeOut;
-    us_fake = new Ultrasonic(TRIG, ECHO, timeOut);
+    sonar = new NewPing(TRIG, ECHO, timeOut);
 }
 
 //Distance read (cm)
 int US::read(){
-    return us_fake->read();
+    return sonar->ping_cm();
 }
 
 //Debug info in serial monitor
@@ -173,17 +173,14 @@ Compass::Compass(int id, int C1, int C2, int LIM){
 
 //Angle read by mode (0: [0, 360], 1: [-1, 1])
 double Compass::read(int mode){
-    digitalWriteFast(13, HIGH);
     byte buffer[2];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
     Wire.endTransmission();
     Wire.requestFrom(ADDRESS, 2); 
-    for(byte i = 0; i < 2; i++){
-        buffer[i] = Wire.read();
-    }
+    buffer[0] = Wire.read();
+    buffer[1] = Wire.read();
     int angle = word(buffer[1], buffer[0]) - OFFSET;
-    digitalWriteFast(13, LOW);
     if(angle < 0) angle += 360;
     if(mode == 0) return double(angle);
     return degToDec(angle);
@@ -252,28 +249,21 @@ void IRSeeker::init(){
 
 //IR ball direction read by mode (0: [0, 9], 1: [-120, 120])
 int IRSeeker::read(int mode){
-    digitalWriteFast(13, HIGH);
-    byte buffer[6];
+    digitalWrite(13, HIGH);
+    byte buffer;
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
     Wire.endTransmission();
-    //CHECK IF THIS WORKS WHEN ONLY 1 BYTE IS REQUESTED AND READ
-    Wire.requestFrom(ADDRESS, 6);
-    for(byte i = 0; i < 6; i++){
-        buffer[i] = Wire.read();
-    }
-    //CHECK IF THIS IS NECESSARY (PROB NOT)
-    while(Wire.available() > 0){
-        Wire.read();
-    }
-    digitalWriteFast(13, LOW);
-    if(mode == 0) return (10 - buffer[0]) % 10;
-    if(buffer[0] == 0) return NaN;
-    return -(buffer[0] * 30 - 150);
+    Wire.requestFrom(ADDRESS, 1);
+    buffer = Wire.read();
+    digitalWrite(13, LOW);
+    if(mode == 0) return (10 - buffer) % 10;
+    if(buffer == 0) return NaN;
+    return -(buffer * 30 - 150);
 }
 
 int IRSeeker::strength(){
-    digitalWriteFast(13, HIGH);
+    digitalWrite(13, HIGH);
     byte buffer[6];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
@@ -285,7 +275,7 @@ int IRSeeker::strength(){
     while(Wire.available() > 0){
         Wire.read();
     }
-    digitalWriteFast(13, LOW);
+    digitalWrite(13, LOW);
     if(buffer[0] == 0) return 0;
     else if(buffer[0] % 2 == 0) return (buffer[buffer[0]/2] + buffer[(buffer[0]/2)+1]) / 2;
     else return buffer[(buffer[0]/2)+1];

@@ -31,7 +31,7 @@ void vectorControl(double angle){
 
 //Game plan
 void gp(){
-    line(0);
+    line();
 }
 
 //Orientation towards fake north (front)
@@ -40,69 +40,35 @@ void orientation(){
     rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
 }
 
-//Staying within boundaries (0: immediate response, 1: checks for change in IR)
-//The short delay may or may not be necessary for state 1 - WIP
-void line(int mode){
-    if(mode == 0){
-        if(L3.read()){
-            //Serial.println("adelante");
-            bwd();
-        }
-        else if(L1.read()){
-            //Serial.println("atras");
-            fwd();
-        }
-        else if(L2.read()){
-            //Serial.println("izquierda");
-            rig();
-        }
-        else if(L4.read()){
-            //Serial.println("derecha");
-            lef();
-        }
-        else{
-            //Serial.println("nada");
-            ball(0);
-            //fwd();
-        }
+//Staying within boundaries - WIP - Delays may be necessary
+//Currently works in close proximity, fails with momentum
+void line(){
+    if(L3.read()){
+        //Serial.println("adelante");
+        cont++;
+        bwd();
+    }
+    else if(L1.read()){
+        //Serial.println("atras");
+        cont++;
+        fwd();
+    }
+    else if(L2.read()){
+        //Serial.println("izquierda");
+        cont++;
+        rig();
+    }
+    else if(L4.read()){
+        //Serial.println("derecha");
+        lef();
+        cont++;
     }
     else{
-        if(L1.read() == 1){
-            int past = IR.read(0);
-            while(IR.read(0) == past){
-                stp(0);
-            }
-            fwd();
-            delay(50);
-        }
-        else if(L1.read() != 0) fwd();
-        else if(L2.read() == 1){
-            int past = IR.read(0);
-            while(IR.read(0) == past){
-                stp(0);
-            }
-            rig();
-            delay(50);
-        }
-        else if(L2.read() != 0) rig();
-        else if(L3.read() == 1){
-            int past = IR.read(0);
-            while(IR.read(0) == past){
-                stp(0);
-            }
-            bwd();
-            delay(50);
-        }
-        else if(L3.read() != 0) bwd();
-        else if(L4.read() == 1){
-            int past = IR.read(0);
-            while(IR.read(0) == past){
-                stp(0);
-            }
-            lef();
-            delay(50);
-        }
-        else if(L4.read() != 0) lef();
+        //Serial.println("nada");
+        ball(0);
+        if(cont != 0) Serial.println(cont);
+        cont = 0;
+        //fwd();
     }
 }
 
@@ -133,7 +99,7 @@ void ball(int mode){
             case 2: case 3:
                 lef();
                 break;
-            case 4:-
+            case 4:
                 lefDiag();
                 break;
             case 5:

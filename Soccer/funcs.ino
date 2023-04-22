@@ -19,7 +19,7 @@ bool checkDelay(int time){
 void tracker(){
     trackNow = millis();
     if(trackNow - trackBefore >= 500){
-        digitalWriteFast(13, (led ? LOW : HIGH));
+        digitalWrite(13, (led ? LOW : HIGH));
         led = !led;
         trackBefore = trackNow;
     }
@@ -32,8 +32,8 @@ bool inside(){
 
 //Initialize program (0: Serial port, 1: Compass, 2: IR, 3: All)
 void globalInit(int mode){
-    pinModeFast(13, OUTPUT);
-    digitalWriteFast(13, HIGH);
+    pinMode(13, OUTPUT);
+    digitalWrite(13, HIGH);
     Serial.begin(9600);
     Serial.println("Tacos ");
     if(mode % 2 == 1) Comp.init();

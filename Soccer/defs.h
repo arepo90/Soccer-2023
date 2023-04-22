@@ -11,7 +11,7 @@
 #include <EEPROM.h>
 #include <Wire.h>
 #include <Ultrasonic.h>
-#include <digitalWriteFast.h>
+#include <NewPing.h>
 
 typedef long long lli;
 typedef long double ld;
@@ -74,7 +74,7 @@ class US{
         bool arg;
         int past = 0;
         int id;
-        Ultrasonic* us_fake;
+        NewPing* sonar;
     public:
         US(int id, int TRIG, int ECHO, ul timeOut);
         int read();
