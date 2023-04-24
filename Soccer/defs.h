@@ -15,8 +15,8 @@
 
 typedef long long lli;
 typedef long double ld;
-typedef String S;
 typedef unsigned long ul;
+typedef String S;
 
 #define deb(x) Serial.print(#x": "); Serial.println(x);
 #define NaN 420

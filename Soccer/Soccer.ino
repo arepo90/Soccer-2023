@@ -1,16 +1,19 @@
 /*
-    Main code v1.1.6 - 22/04/2023 - Soccer 2023
+    Main code v1.1.7 - 22/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    HIGHLY UNSTABLE VERSION
+    AMAZINGLY UNSTABLE VERSION
+    (Coming soon: Unfathomably unstable version)
 
     #1 PRIORITY: FIX I2C COMMS
-    IRSeeker seems to be the main issue
-    Compass appears to be fixed now? idfk
-    Maybe fast reading was the issue?
-    digitalWriteFast.h is cursed? what is going on
+    I am utterly and completely cluelees as to what tf is going on
+    Comp works well MOST of the time with ONE connector
+    IR doesn't wotk MOST of the time with the OTHER connector
+    Emphasis on MOST, because there is absolutely no indication as to when it changes
+    These are probably coincidences, fact is: I2C doesnt work now (it never has as far as i know)
 
     US will be ready when they're ready
+    Still unreliable af with new library, no surprise there
 */
 
 #include "defs.h"
@@ -89,7 +92,6 @@
 #define DEL 30
 
 //Helper variables
-ul trackNow = 0, trackBefore = 0, cont = 0;
 const int robotId = 0; 
 bool led = true;
 
@@ -110,7 +112,7 @@ Light L3(3, LUZ_A3, LUZ_B3, arg1);
 Light L4(4, LUZ_A4, LUZ_B4, arg1);
 
 //Ultrasonic sensor declarations
-//Time argument sets the timeout (range and delay change proportionally)
+//Timeout argument changes the max distance (cm)
 ul timeout = 300;
 US U1(1, US_T1, US_E1, timeout);
 US U2(2, US_T2, US_E2, timeout);
@@ -125,14 +127,17 @@ IRSeeker IR(1, IR1, IR2);
 //---------------Main code---------------
 
 void setup(){
-    globalInit(3);
+    globalInit(2);
     Serial.println("3 pesos");
 }
 
 void loop(){
-    //gp();
-    Comp.debug();
-    IR.debug();
-    Serial.println();
+    double angle = IR.read(1);
+        if(angle == double(NaN)) followPath(1.0);
+        else{
+            if(angle > 60.0) angle += 30.0;
+            else if(angle < -60.0) angle -= 30.0;
+            followPath(degToDec(angle));
+        }
     delayMicroseconds(500);
 }

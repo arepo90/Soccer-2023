@@ -43,32 +43,13 @@ void orientation(){
 //Staying within boundaries - WIP - Delays may be necessary
 //Currently works in close proximity, fails with momentum
 void line(){
-    if(L3.read()){
-        //Serial.println("adelante");
-        cont++;
-        bwd();
-    }
-    else if(L1.read()){
-        //Serial.println("atras");
-        cont++;
-        fwd();
-    }
-    else if(L2.read()){
-        //Serial.println("izquierda");
-        cont++;
-        rig();
-    }
-    else if(L4.read()){
-        //Serial.println("derecha");
-        lef();
-        cont++;
-    }
+    if(L3.read()) bwd();
+    else if(L1.read()) fwd();
+    else if(L2.read()) rig();
+    else if(L4.read()) lef();
     else{
-        //Serial.println("nada");
-        ball(0);
-        if(cont != 0) Serial.println(cont);
-        cont = 0;
-        //fwd();
+        //ball(0);
+        vectorControl(0.0);
     }
 }
 

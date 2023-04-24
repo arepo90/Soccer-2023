@@ -15,16 +15,6 @@ bool checkDelay(int time){
     return true;
 }
 
-//Tracker function for checking program continuity
-void tracker(){
-    trackNow = millis();
-    if(trackNow - trackBefore >= 500){
-        digitalWrite(13, (led ? LOW : HIGH));
-        led = !led;
-        trackBefore = trackNow;
-    }
-}
-
 //Check if robot is within boundaries (0: outside, 1: inside)
 bool inside(){
     return !(L1.read() + L2.read() + L3.read() + L4.read());
