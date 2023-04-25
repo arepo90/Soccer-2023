@@ -1,17 +1,14 @@
 /*
-    Main code v1.1.7 - 22/04/2023 - Soccer 2023
+    Main code v1.2 - 25/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    AMAZINGLY UNSTABLE VERSION
-    (Coming soon: Unfathomably unstable version)
-
-    #1 PRIORITY: FIX I2C COMMS
-    I am utterly and completely cluelees as to what tf is going on
-    Comp works well MOST of the time with ONE connector
-    IR doesn't wotk MOST of the time with the OTHER connector
-    Emphasis on MOST, because there is absolutely no indication as to when it changes
-    These are probably coincidences, fact is: I2C doesnt work now (it never has as far as i know)
-
+    STABLE ??? VERSION
+    I dont even know anymore
+    Removing electrical tape around the pins kinda fixed the issue
+    If it was a definitive solution, this is stable
+    Otherwise, start crying
+    What is going on
+    
     US will be ready when they're ready
     Still unreliable af with new library, no surprise there
 */
@@ -65,6 +62,8 @@
 //Ultrasonic 2 - Right
 #define US_E2 29
 #define US_T2 27
+//Distance limit (cm)
+#define US_LIM 400
 
 //Compass address, message and limit
 #define C1 0x01
@@ -89,10 +88,11 @@
 #define FACTOR 3.0
 #define KPI 30
 #define KPF 100
-#define DEL 30
+#define DEL 200
 
 //Helper variables
 const int robotId = 0; 
+int lin1 = 0, lin2 = 0, lin3 = 0, lin4 = 0;
 bool led = true;
 
 //---------------Hardware classes declarations---------------
@@ -113,9 +113,8 @@ Light L4(4, LUZ_A4, LUZ_B4, arg1);
 
 //Ultrasonic sensor declarations
 //Timeout argument changes the max distance (cm)
-ul timeout = 300;
-US U1(1, US_T1, US_E1, timeout);
-US U2(2, US_T2, US_E2, timeout);
+US U1(1, US_T1, US_E1, US_LIM);
+US U2(2, US_T2, US_E2, US_LIM);
 
 //Compass sensor declarations
 //Last argument sets limit for north in degrees (same for left and right)
@@ -127,17 +126,10 @@ IRSeeker IR(1, IR1, IR2);
 //---------------Main code---------------
 
 void setup(){
-    globalInit(2);
+    globalInit(3);
     Serial.println("3 pesos");
 }
 
 void loop(){
-    double angle = IR.read(1);
-        if(angle == double(NaN)) followPath(1.0);
-        else{
-            if(angle > 60.0) angle += 30.0;
-            else if(angle < -60.0) angle -= 30.0;
-            followPath(degToDec(angle));
-        }
-    delayMicroseconds(500);
+    gp();
 }

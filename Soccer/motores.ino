@@ -22,35 +22,35 @@ void stp(int mode){
 }
 
 //Move forward
-void fwd(){
-    M1.move(-2*DEF);
-    M2.move(-2*DEF);
-    M3.move(2*DEF);
-    M4.move(2*DEF);
+void fwd(double fact){
+    M1.move(-fact*DEF);
+    M2.move(-fact*DEF);
+    M3.move(fact*DEF);
+    M4.move(fact*DEF);
 }
 
 //Move backwards
-void bwd(){
-    M1.move(2*DEF);
-    M2.move(2*DEF);
-    M3.move(-2*DEF);
-    M4.move(-2*DEF);
+void bwd(double fact){
+    M1.move(fact*DEF);
+    M2.move(fact*DEF);
+    M3.move(-fact*DEF);
+    M4.move(-fact*DEF);
 }
 
 //Move left
-void lef(){
-    M1.move(-2*DEF);
-    M2.move(2*DEF);
-    M3.move(2*DEF);
-    M4.move(-2*DEF);
+void lef(double fact){
+    M1.move(-fact*DEF);
+    M2.move(fact*DEF);
+    M3.move(fact*DEF);
+    M4.move(-fact*DEF);
 }
 
 //Move right
-void rig(){
-    M1.move(2*DEF);
-    M2.move(-2*DEF);
-    M3.move(-2*DEF);
-    M4.move(2*DEF);
+void rig(double fact){
+    M1.move(fact*DEF);
+    M2.move(-fact*DEF);
+    M3.move(-fact*DEF);
+    M4.move(fact*DEF);
 }
 
 //Move towards the backward right diagonal
@@ -75,24 +75,4 @@ void rotate(int n){
     M2.move(n);
     M3.move(n);
     M4.move(n);
-}
-
-//Test all movements
-void movements(){
-    rig();
-    delay(500);
-    stp(0);
-    delay(500);
-    bwd();
-    delay(500);
-    stp(0);
-    delay(500);
-    lef();
-    delay(500);
-    stp(0);
-    delay(500);
-    fwd();
-    delay(500);
-    stp(0);
-    delay(500);
 }

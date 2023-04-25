@@ -142,12 +142,12 @@ void Light::debug(){
 }
 
 //US sensor setup and pin declaration
-US::US(int id, int TRIG, int ECHO, ul timeOut){
+US::US(int id, int TRIG, int ECHO, int DIS_LIM){
     this->id = id;
     this->TRIG = TRIG;
     this->ECHO = ECHO;
-    this->timeOut = timeOut;
-    sonar = new NewPing(TRIG, ECHO, timeOut);
+    this->DIS_LIM = DIS_LIM;
+    sonar = new NewPing(TRIG, ECHO, DIS_LIM);
 }
 
 //Distance read (cm)

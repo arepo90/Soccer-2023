@@ -15,9 +15,13 @@ bool checkDelay(int time){
     return true;
 }
 
-//Check if robot is within boundaries (0: outside, 1: inside)
-bool inside(){
-    return !(L1.read() + L2.read() + L3.read() + L4.read());
+//Reads lines and returns if any are touching
+bool readLines(){
+    lin1 = L1.read();
+    lin2 = L2.read();
+    lin3 = L3.read();
+    lin4 = L4.read();
+    return (lin1 + lin2 + lin3 + lin4);
 }
 
 //Initialize program (0: Serial port, 1: Compass, 2: IR, 3: All)

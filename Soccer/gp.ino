@@ -15,6 +15,10 @@ void followPath(double angle){
 
 //Follow path for given direction with angle correction [-1, 1]
 void vectorControl(double angle){
+    if(readLines()){
+        line();
+        return;
+    }
     double error = Comp.read(1);
     if(error > 0.0) error -= double(C_LIM)/360.0;
     else error += double(C_LIM)/360.0;
@@ -31,72 +35,63 @@ void vectorControl(double angle){
 
 //Game plan
 void gp(){
-    line();
+    ball();
 }
 
-//Orientation towards fake north (front)
+//Staying within boundaries
+//The delay system only works well with POWER < 60
+void line(){
+    if(lin3){
+        bwd((lin3 == 1 ? 2 : lin3));
+        if(lin3 >= 2) delay(DEL);
+    }
+    else if(lin1){
+        fwd((lin1 == 1 ? 2 : lin1));
+        if(lin1 >= 2) delay(DEL);
+    }
+    else if(lin2){
+        rig((lin2 == 1 ? 2 : lin2));
+        if(lin2 >= 2) delay(DEL);
+    }
+    else if(lin4){
+        lef((lin4 == 1 ? 2 : lin4));
+        if(lin4 >= 2) delay(DEL);
+    }
+    else Serial.println("If you are reading this, there is a memory leak :p");
+}
+
+//Returning when no ball detected - WIP - Ultrasonics are NOT reliable
+void comeback(){
+    if(readLines()){
+        line();
+        return;
+    }
+    vectorControl(1.0);
+}
+
+//Ball tracking
+void ball(){
+    if(readLines()){
+        line();
+        return;
+    }
+    double angle = IR.read(1);
+    if(angle == double(NaN)) comeback();
+    else{
+        if(angle > 60.0) angle += 30.0;
+        else if(angle < -60.0) angle -= 30.0;
+        vectorControl(degToDec(angle));
+    }
+}
+
+//Simple orientation
 void orientation(){
     double angle = Comp.read(1);
     rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
 }
 
-//Staying within boundaries - WIP - Delays may be necessary
-//Currently works in close proximity, fails with momentum
-void line(){
-    if(L3.read()) bwd();
-    else if(L1.read()) fwd();
-    else if(L2.read()) rig();
-    else if(L4.read()) lef();
-    else{
-        //ball(0);
-        vectorControl(0.0);
-    }
-}
-
-//Returning when no ball detected - WIP - Ultrasonics are NOT reliable
-void comeback(){
-    vectorControl(1.0);
-}
-
-//Ball tracking (0: Move to ball angle, 1: Particular cases)
-void ball(int mode){
-    if(mode == 0){
-        double angle = IR.read(1);
-        if(angle == double(NaN)) comeback();
-        else{
-            if(angle > 60.0) angle += 30.0;
-            else if(angle < -60.0) angle -= 30.0;
-            vectorControl(degToDec(angle));
-        }
-    }
-    else{
-        switch(IR.read(0)){
-            case 0:
-                comeback();
-                break;
-            case 1: case 9:
-                bwd();
-                break;
-            case 2: case 3:
-                lef();
-                break;
-            case 4:
-                lefDiag();
-                break;
-            case 5:
-                fwd();
-                break;
-            case 6:
-                rigDiag();
-                break;
-            case 7: case 8:
-                rig();
-                break;
-        }
-    }
-}
-
-void circleFunc(int updt){
-    if(checkDelay(100)) Comp.setOffset((Comp.getOffset() + updt) % 360);
+//Irrelevant - Orbits a point (w = 360/updt * del)
+void circleFunc(int del, int updt){
+    if(checkDelay(del)) Comp.setOffset((Comp.getOffset() + updt) % 360);
     vectorControl(-0.5);
 }

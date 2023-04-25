@@ -10,7 +10,6 @@
 #include "Arduino.h"
 #include <EEPROM.h>
 #include <Wire.h>
-#include <Ultrasonic.h>
 #include <NewPing.h>
 
 typedef long long lli;
@@ -70,13 +69,13 @@ class US{
     private:
         int TRIG;
         int ECHO;
-        ul timeOut;
+        int DIS_LIM;
         bool arg;
         int past = 0;
         int id;
         NewPing* sonar;
     public:
-        US(int id, int TRIG, int ECHO, ul timeOut);
+        US(int id, int TRIG, int ECHO, int DIS_LIM);
         int read();
         void debug();
 };
