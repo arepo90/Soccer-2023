@@ -1,16 +1,15 @@
 /*
-    Main code v1.2 - 25/04/2023 - Soccer 2023
+    Main code v1.2 - Main robot - 25/04/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    STABLE ??? VERSION
+    STABLE VERSION ???
     I dont even know anymore
     Removing electrical tape around the pins kinda fixed the issue
     If it was a definitive solution, this is stable
     Otherwise, start crying
     What is going on
     
-    US will be ready when they're ready
-    Still unreliable af with new library, no surprise there
+    US are still unreliable af with new library, no surprise there
 */
 
 #include "defs.h"
@@ -64,6 +63,8 @@
 #define US_T2 27
 //Distance limit (cm)
 #define US_LIM 400
+#define MIN_DIS 20
+#define MAX_DIS 60
 
 //Compass address, message and limit
 #define C1 0x01
@@ -77,10 +78,10 @@
 #define IR_CORR 45
 
 //Motor powers
-#define POW1 80
-#define POW2 80
-#define POW3 80
-#define POW4 80
+#define POW1 60
+#define POW2 60
+#define POW3 60
+#define POW4 60
 
 //Movement settings
 #define DEF NaN
@@ -131,5 +132,5 @@ void setup(){
 }
 
 void loop(){
-    gp();
+    lightDebug();
 }

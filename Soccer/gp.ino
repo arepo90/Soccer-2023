@@ -69,6 +69,23 @@ void comeback(){
     vectorControl(1.0);
 }
 
+
+//Returning when no ball is detected with US - WIP heavy testing required
+void usComeback(){
+    int dis1 = U1.read(), dis2 = U2.read();
+    if(dis1 == 0 || dis2 == 0) vectorControl(1.0);
+    else if(dis1 < dis2){
+        if(dis1 < MIN_DIS) vectorControl(0.5);
+        else if(dis1 > MAX_DIS) vectorControl(-0.75);
+        else vectorControl(1.0);
+    }
+    else{
+        if(dis2 < MIN_DIS) vectorControl(-0.5);
+        else if(dis2 > MAX_DIS) vectorControl(0.75);
+        else vectorControl(1.0);
+    }
+}
+
 //Ball tracking
 void ball(){
     if(readLines()){

@@ -6,15 +6,16 @@
 
 //---------------General functions---------------
 
-//Degree to decimal angle [-1, 1]
+//Degree to decimal angle [0, 360] -> [-1, 1]
 double degToDec(int x){
     if(x == NaN) return double(NaN);
     if(x == 180) return 1.0;
     return ( ((-fabs(double(x)-180.0)) / (double(x)-180.0)) - 1.0 + double(x)/180.0 );
 }
 
-//Decimal angle to degree [0, 360]
+//Decimal angle to degree [-1, 1] -> [0, 360]
 int decToDeg(double x){
+    if(x == double(NaN)) return NaN;
     if(x == 0.0) return 0;
     return ( 180.0 * (x + 1.0 - fabs(x)/x) );
 }
@@ -40,17 +41,18 @@ int memRead(int target){
 //---------------Hardware functions---------------
 
 //Motor setup and pin declaration
-Motor::Motor(int id, int EN, int PWM_A, int PWM_B, int defPow){
+Motor::Motor(int id, int PWM, int DIR_A, int DIR_B, int defPow){
     this->id = id;
-    this->EN = EN;
-    this->PWM_A = PWM_A;
-    this->PWM_B = PWM_B;
+    this->PWM = PWM;
+    this->DIR_A = DIR_A;
+    this->DIR_B = DIR_B;
     this->defPow = defPow;
-    pinMode(EN, OUTPUT);
-    pinMode(PWM_A, OUTPUT);
-    pinMode(PWM_B, OUTPUT);
+    pinMode(PWM, OUTPUT);
+    pinMode(DIR_A, OUTPUT);
+    pinMode(DIR_B, OUTPUT);
 }
 
+//Motor power getter function
 int Motor::getPow(){
     return POW;
 }
@@ -58,10 +60,11 @@ int Motor::getPow(){
 //Set motor power (-255 -> 255)
 void Motor::move(int Pow){
     if(abs(Pow) == NaN) POW = (Pow > 0 ? defPow : -defPow);
+    else if(abs(Pow) > 255) POW = (Pow > 0 ? 255 : -255);
     else POW = Pow;
-    digitalWrite(EN, HIGH);
-    analogWrite(PWM_A, (POW > 0 ? 0 : -POW));
-    analogWrite(PWM_B, (POW > 0 ? POW : 0));
+    analogWrite(PWM, abs(POW));
+    digitalWrite(DIR_A, (POW > 0 ? LOW : HIGH));
+    digitalWrite(DIR_B, (POW > 0 ? HIGH : LOW));
 }
 
 //Update motor power (increases or decreases current power)
@@ -74,11 +77,9 @@ void Motor::update(int Pow){
 
 //Motor stop (0 -> 255)
 void Motor::brake(int force){
-    if(POW == 0) return;
-    this->move((POW > 0 ? -force : force));
-    delay(2);
-    this->move(0);
-    delay(2);
+    analogWrite(PWM, force);
+    digitalWrite(DIR_A, HIGH);
+    digitalWrite(DIR_B, HIGH);
 }
 
 //Test motor back and forth
@@ -106,17 +107,15 @@ Light::Light(int id, int PIN_A, int PIN_B, bool check){
         LIM_A = memRead(id*2);
         LIM_B = memRead((id*2)+1);
     }
-    pinMode(PIN_A, INPUT);
-    pinMode(PIN_B, INPUT);
 }
 
-//Read sensor block state (0: None, 1: Outer, 2: Inner, 3: Both)
+//Read sensor block state (0: None, 1: Outer, 2: Both, 3: Inner)
 int Light::read(){
     bool temp1 = false, temp2 = false;
     if(analogRead(PIN_A) >= LIM_A) temp1 = true;
     if(analogRead(PIN_B) >= LIM_B) temp2 = true;
-    if(temp1 && temp2) return 3;
-    else if(temp2) return 2;
+    if(temp1 && temp2) return 2;
+    else if(temp2) return 3;
     else if(temp1) return 1;
     else return 0;
 }
@@ -173,6 +172,7 @@ Compass::Compass(int id, int C1, int C2, int LIM){
 
 //Angle read by mode (0: [0, 360], 1: [-1, 1])
 double Compass::read(int mode){
+    digitalWrite(13, HIGH);
     byte buffer[2];
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
@@ -180,6 +180,7 @@ double Compass::read(int mode){
     Wire.requestFrom(ADDRESS, 2); 
     buffer[0] = Wire.read();
     buffer[1] = Wire.read();
+    digitalWrite(13, LOW);
     int angle = word(buffer[1], buffer[0]) - OFFSET;
     if(angle < 0) angle += 360;
     if(mode == 0) return double(angle);
@@ -203,15 +204,17 @@ void Compass::setOffset(int angle){
 
 //Initialize I2C communication
 void Compass::init(){
-    Serial.println("Compass initialization started");
+    Serial.print("Compass initialization started");
     Wire.begin();
     Wire.beginTransmission(ADDRESS);
     Wire.write(0x00);
     Wire.endTransmission();
     while(Wire.available() > 0){
+        Serial.print(".");
         Wire.read();
     }
     OFFSET = this->read(0);
+    Serial.println();
     Serial.println("Compass initialization complete");
 }
 
@@ -236,46 +239,26 @@ IRSeeker::IRSeeker(int id, int IR1, int IR2){
 
 //Initialize I2C communication
 void IRSeeker::init(){
-    Serial.println("IR Seeker initialization started");
+    Serial.print("IR Seeker initialization started");
     Wire.begin();
     Wire.beginTransmission(ADDRESS);
     Wire.write(0x00);
     Wire.endTransmission();
-    while(Wire.available() > 0){
-        Wire.read();
-    }
+    Serial.println();
     Serial.println("IR Seeker initialization complete");
 }
 
 //IR ball direction read by mode (0: [0, 9], 1: [-120, 120])
 int IRSeeker::read(int mode){
-    digitalWrite(13, HIGH);
     byte buffer;
     Wire.beginTransmission(ADDRESS);
     Wire.write(MSG);
     Wire.endTransmission();
     Wire.requestFrom(ADDRESS, 1);
     buffer = Wire.read();
-    digitalWrite(13, LOW);
     if(mode == 0) return (10 - buffer) % 10;
     if(buffer == 0) return NaN;
     return -(buffer * 30 - 150);
-}
-
-int IRSeeker::strength(){
-    digitalWrite(13, HIGH);
-    byte buffer[6];
-    Wire.beginTransmission(ADDRESS);
-    Wire.write(MSG);
-    Wire.endTransmission();
-    Wire.requestFrom(ADDRESS, 6);
-    for(byte i = 0; i < 6; i++){
-        buffer[i] = Wire.read();
-    }
-    digitalWrite(13, LOW);
-    if(buffer[0] == 0) return 0;
-    else if(buffer[0] % 2 == 0) return (buffer[buffer[0]/2] + buffer[(buffer[0]/2)+1]) / 2;
-    else return buffer[(buffer[0]/2)+1];
 }
 
 //Debug info in serial monitor
