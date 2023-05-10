@@ -1,0 +1,47 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=testtesttest
+*Date=20:36:23
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;THT;71.4022;-31.7464;90;Bottom;VCC GND1
+2;;TO92 [THT];91.4335;-35.1531;-67.5;Bottom;Q29
+3;;TO92 [THT];36.1775;-91.8894;157.5;Bottom;Q17
+4;;TO92 [THT];92.1752;-68.2411;-112.5;Bottom;Q27
+5;;TO92 [THT];83.7737;-81.7306;-135;Bottom;Q26
+6;;;77.2342;-76.8391;-135;Bottom;IMG1
+7;;TO92 [THT];14.5409;-68.9796;112.5;Bottom;Q19
+8;;TO92 [THT];22.688;-82.2179;135;Bottom;Q18
+9;;TO92 [THT];82.0163;-21.9149;-45;Bottom;Q30
+10;;TO92 [THT];52.1617;-10.0675;0;Bottom;Q32
+11;100nF;100 mil [THT, multilayer];11.7122;-58.4164;180;Bottom;C5
+12;;;81.6957;-80.779;-135;Bottom;TXT1
+13;;;52.3521;-81.2764;0;Bottom;Hole16
+14;;TO92 [THT];13.7992;-35.8916;67.5;Bottom;Q21
+15;100nF;100 mil [THT, multilayer];46.0022;-11.4264;90;Bottom;C8
+16;220;THT;49.8122;-16.5064;180;Bottom;R8
+17;;;52.4684;-53.0973;0;Bottom;Hole17
+18;;;81.5621;-52.0665;0;Bottom;Hole14
+19;;TO92 [THT];10.3533;-52.2569;90;Bottom;Q20
+20;;;24.4122;-52.0665;0;Bottom;Hole15
+21;;TO92 [THT];95.6211;-51.8759;-90;Bottom;Q28
+22;220;THT;16.7922;-54.6064;-90;Bottom;R5
+23;220;THT;54.8922;-88.8964;180;Bottom;R6
+24;;TO92 [THT];52.5427;-95.3353;-180;Bottom;Q24
+25;220;THT;89.1822;-49.5264;-90;Bottom;R7
+26;100nF;100 mil [THT, multilayer];94.2622;-45.7164;180;Bottom;C7
+27;;TO92 [THT];68.5269;-13.5134;-22.5;Bottom;Q31
+28;;TO92 [THT];35.4389;-12.9851;22.5;Bottom;Q23
+29;100nF;100 mil [THT, multilayer];58.7022;-93.9764;90;Bottom;C6
+30;;TO92 [THT];22.2007;-22.4023;45;Bottom;Q22
+31;;THT;52.3522;-26.6664;90;Bottom;U4
+32;;TO92 [THT];69.2655;-92.4176;-157.5;Bottom;Q25

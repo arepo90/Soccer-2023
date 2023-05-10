@@ -1,0 +1,85 @@
+*Pick And Place List
+*Company=
+*Author=
+*eMail=
+*
+*Project=enmedio todo
+*Date=19:06:55
+*CreatedBy=Fritzing 0.9.3b.04.19.5c895d327c44a3114e5fcc9d8260daf0cbb52806
+*
+*
+*Coordinates in mm, always center of component
+*Origin 0/0=Lower left corner of PCB
+*Rotation in degree (0-360, math. pos.)
+*
+*No;Value;Package;X;Y;Rotation;Side;Name
+1;;;129.257;-100.607;0;Bottom;Hole10
+2;;;45.2964;-50.7946;-45;Bottom;TXT12
+3;;;40.3575;-56.1567;0;Bottom;Via4
+4;;;178.039;-91.6722;0;Bottom;Hole21
+5;;;85.3394;-57.8501;-45;Bottom;TXT12
+6;;;74.3652;-46.9846;-45;Bottom;TXT12
+7;;;36.8297;-42.3279;-45;Bottom;TXT12
+8;;;37.8062;-145.012;0;Bottom;Via3
+9;;THT;106.397;-79.0168;90;Bottom;S1
+10;;;17.9882;-59.8407;45;Bottom;TXT9
+11;;;103.265;-160.327;0;Top;GND
+12;;;108.081;-178.149;0;Bottom;Hole24
+13;;THT;23.6934;-59.8127;45;Bottom;U2
+14;;;124.518;-95.3857;0;Bottom;TXT10
+15;;;100.047;-128.547;0;Bottom;Hole9
+16;;THT;139.544;-22.6288;90;Bottom;J67
+17;;;16.1843;-58.2174;45;Bottom;TXT9
+18;;THT;174.215;-43.5838;0;Bottom;MOTOR SWITCH
+19;;;31.526;-85.6648;0;Bottom;Hole17
+20;;;92.1213;-22.0302;0;Bottom;Hole27
+21;;THT;117.827;-68.8568;90;Bottom;VCC GND
+22;;;72.1074;-100.607;0;Bottom;Hole12
+23;;;151.963;-45.8422;-45;Bottom;VCC TRIG ECHO GND
+24;;;100.164;-81.2842;0;Bottom;TXT11
+25;;;92.125;-178.07;0;Bottom;Hole22
+26;;;155.927;-72.6806;90;Bottom;U4
+27;;;31.4797;-113.685;0;Bottom;Hole16
+28;;THT;139.544;-29.7408;90;Bottom;GND 12V
+29;;THT;33.2455;-135.024;0;Bottom;J65
+30;;;147.149;-49.5692;0;Bottom;TXT10
+31;;;51.9416;-84.2512;135;Bottom;VCC GND SCL SDA
+32;;;45.5916;-152.831;135;Bottom;GND ECHO TRIG VCC
+33;;;72.1076;-61.2367;0;Bottom;Via6
+34;;;19.9714;-61.7223;45;Bottom;TXT9
+35;;;141.926;-95.4345;0;Bottom;TXT10
+36;;;164.808;-95.7748;0;Bottom;TXT10
+37;;;55.7516;-80.4412;135;Bottom;VCC GND SCL SDA
+38;;;114.241;-31.013;0;Bottom;Hole29
+39;;;105.118;-51.0369;0;Bottom;Via5
+40;;;168.407;-113.59;0;Bottom;Hole18
+41;;THT;177.263;-56.2838;0;Bottom;J68
+42;;;33.8693;-65.6537;-45;Bottom;TXT9
+43;;;100.047;-62.5068;0;Bottom;Hole13
+44;;;168.477;-85.5872;0;Bottom;Hole19
+45;;;177.943;-107.706;0;Bottom;Hole20
+46;220;THT;38.0354;-61.4547;-45;Bottom;R2
+47;;;22.194;-107.733;0;Bottom;Hole14
+48;;;59.0322;-51.3663;135;Bottom;U5
+49;;;108.107;-22.0784;0;Bottom;Hole28
+50;;;147.27;-95.5598;0;Bottom;TXT10
+51;;;133.067;-72.6806;90;Bottom;U3
+52;;;86.0863;-167.827;0;Bottom;Hole23
+53;220;THT;35.4954;-63.9947;-45;Bottom;R1
+54;;;114.102;-167.705;0;Bottom;Hole25
+55;;THT;176.755;-65.1738;0;Bottom;LOGIC SWITCH
+56;;THT;97.5075;-79.0168;90;Bottom;J62
+57;;;23.4293;-65.3836;45;Bottom;TXT9
+58;;;141.925;-49.414;0;Bottom;TXT10
+59;;;21.7512;-63.502;45;Bottom;TXT9
+60;;;25.4124;-67.0617;45;Bottom;TXT9
+61;;;96.2376;-160.297;0;Top;12V
+62;;;124.317;-49.4165;0;Bottom;TXT10
+63;;;35.2775;-145.012;0;Bottom;Via2
+64;;THT;168.373;-43.5838;0;Bottom;J70
+65;;THT;24.1015;-134.77;180;Bottom;MOTOR SWITCH
+66;;;142.924;-143.351;-135;Bottom;IMG1
+67;;;164.744;-49.6708;0;Bottom;TXT10
+68;;;154.681;-155.872;-135;Bottom;TXT13
+69;;;22.2632;-91.6857;0;Bottom;Hole15
+70;;;86.2229;-31.1157;0;Bottom;Hole26
