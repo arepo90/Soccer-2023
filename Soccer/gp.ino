@@ -19,23 +19,31 @@ void vectorControl(double angle){
         line();
         return;
     }
-    double error = Comp.read(1);
+    double error/* = Comp.read(1)*/;
     if(error > 0.0) error -= double(C_LIM)/360.0;
     else error += double(C_LIM)/360.0;
     followPath(angle);
     if(fabs(error) > 0.0){
-        M1.update(int(abs(M1.getPow()) * error * FACTOR));
-        M2.update(int(abs(M2.getPow()) * error * FACTOR));
-        M3.update(int(abs(M3.getPow()) * error * FACTOR));
-        M4.update(int(abs(M4.getPow()) * error * FACTOR));
+        M1.update(abs(POW1 * error * FACTOR));
+        M2.update(abs(POW2 * error * FACTOR));
+        M3.update(abs(POW3 * error * FACTOR));
+        M4.update(abs(POW4 * error * FACTOR));
     }
 }
 
 //---------------Game functions---------------
 
-//Game plan
-void gp(){
-    ball();
+void master(){
+    return;
+}
+void slave(){
+    return;
+}
+
+//Game plan (0: master, 1: slave)
+void gp(int mode){
+    if(mode == 0) master();
+    else slave();
 }
 
 //Staying within boundaries
@@ -72,7 +80,7 @@ void comeback(){
 
 //Returning when no ball is detected with US - WIP heavy testing required
 void usComeback(){
-    int dis1 = U1.read(), dis2 = U2.read();
+    int dis1/* = U1.read()*/, dis2/* = U2.read()*/;
     if(dis1 == 0 || dis2 == 0) vectorControl(1.0);
     else if(dis1 < dis2){
         if(dis1 < MIN_DIS) vectorControl(0.5);
@@ -92,7 +100,7 @@ void ball(){
         line();
         return;
     }
-    double angle = IR.read(1);
+    double angle/* = IR.read(1)*/;
     if(angle == double(NaN)) comeback();
     else{
         if(angle > 60.0) angle += 30.0;
@@ -103,12 +111,6 @@ void ball(){
 
 //Simple orientation
 void orientation(){
-    double angle = Comp.read(1);
+    double angle/* = Comp.read(1)*/;
     rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
-}
-
-//Irrelevant - Orbits a point (w = 360/updt * del)
-void circleFunc(int del, int updt){
-    if(checkDelay(del)) Comp.setOffset((Comp.getOffset() + updt) % 360);
-    vectorControl(-0.5);
 }

@@ -7,6 +7,11 @@
 //Helper variables
 ul before = 0, now = 0;
 
+void getAddress(){
+    WiFi.mode(WIFI_MODE_STA);
+    Serial.println(WiFi.macAddress());
+}
+
 //Delay without stop (time in ms)
 bool checkDelay(int time){
     now = millis();
@@ -15,7 +20,7 @@ bool checkDelay(int time){
     return true;
 }
 
-//Reads lines and returns if any are touching
+//Reads lines and returns true if any are active
 bool readLines(){
     lin1 = L1.read();
     lin2 = L2.read();
@@ -24,24 +29,30 @@ bool readLines(){
     return (lin1 + lin2 + lin3 + lin4);
 }
 
-//Initialize program (0: Serial port, 1: Compass, 2: IR, 3: All)
+//Initialize program (0: Serial, 1: Wireless, 2: Compass, 3: Comms, 4: All)
 void globalInit(int mode){
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
     Serial.begin(9600);
     Serial.println("Tacos ");
-    if(mode % 2 == 1) Comp.init();
-    if(mode >= 2) IR.init();
-    if(!arg1){
-        L1.setLim(LIM_A1, LIM_B1);
-        L2.setLim(LIM_A2, LIM_B2);
-        L3.setLim(LIM_A3, LIM_B3);
-        L4.setLim(LIM_A4, LIM_B4);
+    pinMode(13, OUTPUT);
+    digitalWrite(13, HIGH);
+    if(mode >= 2){
+        if(ROBOT_ID == 0) Wire.begin();
+        else Wire.begin(COMMS_ADDRESS);
+        while(Wire.available() > 0){
+            Wire.read();
+        }
     }
+    if(mode == 1) WL.init();
+    #if ROBOT_ID == 1
+        if(mode >= 3) Comms.init();
+        if(mode == 1 || mode == 3) Comp.init();
+    #endif
     Serial.print("de a ");
 }
 
 //---------------Debugging functions---------------
+
+#if ROBOT_ID == 0
 
 //Debug motor power
 void motorDebug(){
@@ -59,32 +70,12 @@ void lightDebug(){
     L4.debug();
 }
 
+#elif
+
 //Debug US distances
 void usDebug(){
     U1.debug();
     U2.debug();
 }
 
-//Debug EEPROM memory
-void memDebug(){
-    for(int i = 0; i < 32; i++){
-        Serial.print(EEPROM.read(i));
-        Serial.print(" ");
-    }
-    Serial.println();
-    for(int i = 0; i < 8; i++){
-        Serial.print(" MEM");
-        Serial.print(i);
-        Serial.print(": ");
-        Serial.print(memRead(i));
-    }
-}
-
-//Debug all functions
-void globalDebug(){
-    motorDebug();
-    lightDebug();
-    usDebug();
-    Comp.debug();
-    IR.debug();
-}
+#endif

@@ -1,66 +1,63 @@
 /*
-    Main code v1.2 - Main robot - 25/04/2023 - Soccer 2023
+    Main code v2.0 beta - 16/06/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    STABLE VERSION ???
-    I dont even know anymore
-    Removing electrical tape around the pins kinda fixed the issue
-    If it was a definitive solution, this is stable
-    Otherwise, start crying
-    What is going on
-    
-    US are still unreliable af with new library, no surprise there
+    RoboCup version
+    No idea what to do with the new IR uncertainty
+
+    *NEW*
+    Robot behaviour is now chosen through parameters
+    ROBOT_ID in defs.h will determine slave/master
 */
 
 #include "defs.h"
 
 //---------------Hardware definitions---------------
 
+//I2C Slave address for ESP <-> ESP communications
+#define COMMS_ADDRESS 69
+
 //Motor 1 - Back Left
-#define EN_1 33
-#define PWM_A1 4
+#define PWM_A1 1
 #define PWM_B1 2
 //Motor 2 - Front Left
-#define EN_2 32
-#define PWM_A2 8
-#define PWM_B2 6
+#define PWM_A2 3
+#define PWM_B2 4
 //Motor 3 - Front Right
-#define EN_3 25
-#define PWM_A3 7
-#define PWM_B3 9
+#define PWM_A3 5
+#define PWM_B3 6
 //Motor 4 - Back Right
-#define EN_4 23
-#define PWM_A4 3
-#define PWM_B4 5
+#define PWM_A4 7
+#define PWM_B4 8
 
 //A: Outer, B: Inner
 //Light 1 - Back
-#define LUZ_A1 A5
-#define LUZ_B1 A1
+#define LUZ_A1 9
+#define LUZ_B1 10
 #define LIM_A1 800
 #define LIM_B1 800
 //Light 2 - Left
-#define LUZ_A2 A0
-#define LUZ_B2 A2
+#define LUZ_A2 11
+#define LUZ_B2 12
 #define LIM_A2 600
 #define LIM_B2 600
 //Light 3 - Front
-#define LUZ_A3 A3
-#define LUZ_B3 A8
+#define LUZ_A3 13
+#define LUZ_B3 14
 #define LIM_A3 600
 #define LIM_B3 600
 //Light 4 - Right
-#define LUZ_A4 A4
-#define LUZ_B4 A6
+#define LUZ_A4 15
+#define LUZ_B4 15
 #define LIM_A4 800
 #define LIM_B4 800
 
 //Ultrasonic 1 - Left
-#define US_E1 34
-#define US_T1 36
+#define US_E1 16
+#define US_T1 17
 //Ultrasonic 2 - Right
-#define US_E2 29
-#define US_T2 27
+#define US_E2 18
+#define US_T2 19
 //Distance limit (cm)
 #define US_LIM 400
 #define MIN_DIS 20
@@ -71,11 +68,13 @@
 #define C2 0x44
 #define C_LIM 5
 
-//IR Seeker address and message
-#define IR1 0x10 / 2
-#define IR2 0x49
-#define IR_LIM 30
-#define IR_CORR 45
+//IR and Multiplexer pins and aliases
+#define IR0 20
+#define IR1 21
+#define IR2 22
+#define IR3 23
+#define IR_IN 24
+int IR_PINS[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
 
 //Motor powers
 #define POW1 60
@@ -91,46 +90,56 @@
 #define KPF 100
 #define DEL 200
 
+//Wireless comms address
+uint8_t WL_Address[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+
 //Helper variables
-const int robotId = 0; 
 int lin1 = 0, lin2 = 0, lin3 = 0, lin4 = 0;
 bool led = true;
 
 //---------------Hardware classes declarations---------------
 
+I2C Comms(0, COMMS_ADDRESS, 21);
+Wireless WL(0, WL_Address);
+
+#if ROBOT_ID == 0
+
 //Motor declarations
-Motor M1(1, EN_1, PWM_A1, PWM_B1, POW1);
-Motor M2(2, EN_2, PWM_A2, PWM_B2, POW2);
-Motor M3(3, EN_3, PWM_A3, PWM_B3, POW3);
-Motor M4(4, EN_4, PWM_A4, PWM_B4, POW4);
+Motor M1(1, PWM_A1, PWM_B1, POW1);
+Motor M2(2, PWM_A2, PWM_B2, POW2);
+Motor M3(3, PWM_A3, PWM_B3, POW3);
+Motor M4(4, PWM_A4, PWM_B4, POW4);
 
 //Light sensor declarations
 //Last argument changes the limit's source (0: setLim(), 1: EEPROM)
-bool arg1 = false;
-Light L1(1, LUZ_A1, LUZ_B1, arg1);
-Light L2(2, LUZ_A2, LUZ_B2, arg1);
-Light L3(3, LUZ_A3, LUZ_B3, arg1);
-Light L4(4, LUZ_A4, LUZ_B4, arg1);
+Light L1(1, LUZ_A1, LUZ_B1, LIM_A1, LIM_B1);
+Light L2(2, LUZ_A2, LUZ_B2, LIM_A2, LIM_B2);
+Light L3(3, LUZ_A3, LUZ_B3, LIM_A3, LIM_B3);
+Light L4(4, LUZ_A4, LUZ_B4, LIM_A4, LIM_B4);
+
+#elif
 
 //Ultrasonic sensor declarations
-//Timeout argument changes the max distance (cm)
+//Limit argument changes the max distance (cm)
 US U1(1, US_T1, US_E1, US_LIM);
 US U2(2, US_T2, US_E2, US_LIM);
 
 //Compass sensor declarations
-//Last argument sets limit for north in degrees (same for left and right)
+//Limit argument sets north threshold (symmetrical, in degrees)
 Compass Comp(1, C1, C2, C_LIM);
 
 //IR Seeker declarations
-IRSeeker IR(1, IR1, IR2);
+Infrared IR(1, IR_PINS, IR0, IR1, IR2, IR3, IR_IN);
+
+#endif
 
 //---------------Main code---------------
 
 void setup(){
     globalInit(3);
-    Serial.println("3 pesos");
+    Serial.println("4 pesos");
 }
 
 void loop(){
-    lightDebug();
+    gp(0);
 }
