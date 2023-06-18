@@ -183,7 +183,7 @@ void Compass::debug(){
 Infrared::Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN){
     this->id = id;
     this->Mux0 = Mux0;
-    this->Mux2 = Mux1;
+    this->Mux1 = Mux1;
     this->Mux2 = Mux2;
     this->Mux3 = Mux3;
     this->Mux_IN = Mux_IN;
@@ -221,11 +221,18 @@ double Infrared::read(int method, int mode){
                 flag = true;
                 cont++;
             }
+            delayMicroseconds(10);
         }
         maxi = max(maxi, cont);
         arr[i] = cont;
     }
-    if(!flag) return double(NaN);
+    /*Serial.print(arr[0]);
+    Serial.print("\t");
+    Serial.print(arr[2]);
+    Serial.print("\t");
+    Serial.print(arr[4]);
+    Serial.print("\n");*/
+    if(!flag) /*return double(NaN);*/
     if(method == 0){
         double angle = 0.0, cont = 0.0;
         for(int i = 0; i < 16; i++){
@@ -242,52 +249,23 @@ double Infrared::read(int method, int mode){
         c_y += double(arr[i]) / double(SAMPLES) * cos(radians(double(i) * 22.5));
     }
     angle = degrees(atan(c_y / c_x));
-    CERTAINTY = sqrt(sq(c_x) + sq(c_y));
+    if(c_x >= 0.0) angle = 90.0 - angle;
+    else angle = 270 - angle;
+    CERTAINTY = sqrt((c_x*c_x) + (c_y*c_y));
+    Serial.println(" x: " + S(c_x) + " y: " + S(c_y));
+    Serial.print(angle);
+    Serial.print("\t");
+    Serial.print(CERTAINTY);
+    Serial.print("\n");
     if(mode == 0) return angle;
     return degToDec(angle);
 }
 
-Wireless::Wireless(int id, uint8_t *ADDRESS){
-    this->id = id;
-    for(int i = 0; i < 6; i++){
-        this->ADDRESS[i] = ADDRESS[i];
-    }
-}
-
-void Wireless::init(){
-    WiFi.mode(WIFI_STA);
-    esp_now_init();
-    esp_now_register_send_cb(this->sendCB);
-    esp_now_register_recv_cb(this->receiveMsg);
-    memcpy(ESP.peer_addr, ADDRESS, 6);
-    ESP.channel = 0;
-    ESP.encrypt = false;
-    esp_now_add_peer(&ESP);
-}
-
-void Wireless::sendCB(const uint8_t *ADDRESS, esp_now_send_status_t status){
-    Serial.print(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery failed");
-}
-
-void Wireless::receiveMsg(const uint8_t *ADDRESS, const uint8_t *package, int n){
-    memcpy(&WLMSG, package, sizeof(WLMSG));
-}
-
-void Wireless::send(){
-    WLmsg msg;
-    esp_err_t status = esp_now_send(ADDRESS, (uint8_t *) &msg, sizeof(msg));
-    Serial.println(status == ESP_OK ? "Message sent" : "Error sending message");
-}
-
-WLmsg Wireless::read(){
-    return WLMSG;
-}
-
-I2C::I2C(int id, int ADDRESS, int MSG_LENGTH){
+/*I2C::I2C(int id, int ADDRESS, int MSG_LENGTH){
     this->id = id;
     this->ADDRESS = ADDRESS;
     this->MSG_LENGTH = MSG_LENGTH;
-}
+}*/
 
 #if ROBOT_ID == 0
 
@@ -367,20 +345,56 @@ void I2C::debug(){
     Serial.println(this->read("US", 1));
 }
 
-#else
+Wireless::Wireless(int id, uint8_t *ADDRESS){
+    this->id = id;
+    for(int i = 0; i < 6; i++){
+        this->ADDRESS[i] = ADDRESS[i];
+    }
+}
 
-void I2C::init(int id, int ADDRESS, int MSG_LENGTH){
+void Wireless::init(){
+    WiFi.mode(WIFI_STA);
+    esp_now_init();
+    esp_now_register_send_cb(this->sendCB);
+    esp_now_register_recv_cb(this->receiveMsg);
+    memcpy(ESP.peer_addr, ADDRESS, 6);
+    ESP.channel = 0;
+    ESP.encrypt = false;
+    esp_now_add_peer(&ESP);
+}
+
+void Wireless::sendCB(const uint8_t *ADDRESS, esp_now_send_status_t status){
+    Serial.print(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery failed");
+}
+
+void Wireless::receiveMsg(const uint8_t *ADDRESS, const uint8_t *package, int n){
+    memcpy(&WLMSG, package, sizeof(WLMSG));
+}
+
+void Wireless::send(){
+    WLmsg msg;
+    esp_err_t status = esp_now_send(ADDRESS, (uint8_t *) &msg, sizeof(msg));
+    Serial.println(status == ESP_OK ? "Message sent" : "Error sending message");
+}
+
+WLmsg Wireless::read(){
+    return WLMSG;
+}
+
+#else
+/*
+void I2C::init(){
     Wire.onRequest(this->sendMsg);
     Wire.onReceive(this->receiveMsg);
 }
 
-void I2C::sendMsg(int IR, int COMP, int U1, int U2){
+static void I2C::sendMsg(){
     char buf[21];
-    sprintf(buf, "SI%03dXC%03dXU%03dXu%03dE", IR, COMP, U1, U2);
+    sprintf(buf, "SI%03dXC%03dXU%03dXu%03dE", IR, COMP, US1, US2);
     Wire.write(buf);
 }
 
-void I2C::receiveMsg(){
+static void I2C::receiveMsg(){
     Serial.print("Message received:");
     while(Wire.available()){
         char msg = Wire.read();
@@ -388,5 +402,5 @@ void I2C::receiveMsg(){
     }
     Serial.println(" End of Message");
 }
-
+*/
 #endif

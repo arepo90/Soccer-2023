@@ -3,7 +3,7 @@
 */
 
 //---------------General functions---------------
-
+/*
 //Helper variables
 ul before = 0, now = 0;
 
@@ -33,8 +33,6 @@ bool readLines(){
 void globalInit(int mode){
     Serial.begin(9600);
     Serial.println("Tacos ");
-    pinMode(13, OUTPUT);
-    digitalWrite(13, HIGH);
     if(mode >= 2){
         if(ROBOT_ID == 0) Wire.begin();
         else Wire.begin(COMMS_ADDRESS);
@@ -70,7 +68,7 @@ void lightDebug(){
     L4.debug();
 }
 
-#elif
+#else
 
 //Debug US distances
 void usDebug(){
@@ -79,3 +77,4 @@ void usDebug(){
 }
 
 #endif
+*/

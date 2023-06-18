@@ -2,7 +2,7 @@
     Game Plan
     Priorities: Orientation, Line, Ball, Return (WIP)
 */
-
+/*
 //----------Movement helper functions----------
 
 //Motor control for a given angle [-1, 1]
@@ -19,7 +19,7 @@ void vectorControl(double angle){
         line();
         return;
     }
-    double error/* = Comp.read(1)*/;
+    //double error = Comp.read(1);
     if(error > 0.0) error -= double(C_LIM)/360.0;
     else error += double(C_LIM)/360.0;
     followPath(angle);
@@ -80,7 +80,7 @@ void comeback(){
 
 //Returning when no ball is detected with US - WIP heavy testing required
 void usComeback(){
-    int dis1/* = U1.read()*/, dis2/* = U2.read()*/;
+    //int dis1 = U1.read(), dis2 = U2.read();
     if(dis1 == 0 || dis2 == 0) vectorControl(1.0);
     else if(dis1 < dis2){
         if(dis1 < MIN_DIS) vectorControl(0.5);
@@ -100,7 +100,7 @@ void ball(){
         line();
         return;
     }
-    double angle/* = IR.read(1)*/;
+    //double angle = IR.read(1);
     if(angle == double(NaN)) comeback();
     else{
         if(angle > 60.0) angle += 30.0;
@@ -111,6 +111,7 @@ void ball(){
 
 //Simple orientation
 void orientation(){
-    double angle/* = Comp.read(1)*/;
+    //double angle = Comp.read(1);
     rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
 }
+*/

@@ -4,7 +4,7 @@
 */
 
 //---------------Movement functions---------------
-
+/*
 //Stop movement (0: regular, 1: hard brake)
 void stp(int mode){
     if(mode == 0){
@@ -76,3 +76,4 @@ void rotate(int n){
     M3.move(n);
     M4.move(n);
 }
+*/

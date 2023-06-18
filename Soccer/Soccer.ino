@@ -53,11 +53,11 @@
 #define LIM_B4 800
 
 //Ultrasonic 1 - Left
-#define US_E1 16
-#define US_T1 17
+#define US_E1 12
+#define US_T1 14
 //Ultrasonic 2 - Right
-#define US_E2 18
-#define US_T2 19
+#define US_E2 4
+#define US_T2 0
 //Distance limit (cm)
 #define US_LIM 400
 #define MIN_DIS 20
@@ -69,12 +69,12 @@
 #define C_LIM 5
 
 //IR and Multiplexer pins and aliases
-#define IR0 20
-#define IR1 21
-#define IR2 22
-#define IR3 23
-#define IR_IN 24
-int IR_PINS[16] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+#define IR0 27
+#define IR1 26
+#define IR2 25
+#define IR3 33
+#define IR_IN 32
+int IR_PINS[16] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 14, 13, 1, 0};
 
 //Motor powers
 #define POW1 60
@@ -99,8 +99,7 @@ bool led = true;
 
 //---------------Hardware classes declarations---------------
 
-I2C Comms(0, COMMS_ADDRESS, 21);
-Wireless WL(0, WL_Address);
+//I2C Comms(0, COMMS_ADDRESS, 21);
 
 #if ROBOT_ID == 0
 
@@ -117,7 +116,9 @@ Light L2(2, LUZ_A2, LUZ_B2, LIM_A2, LIM_B2);
 Light L3(3, LUZ_A3, LUZ_B3, LIM_A3, LIM_B3);
 Light L4(4, LUZ_A4, LUZ_B4, LIM_A4, LIM_B4);
 
-#elif
+Wireless WL(0, WL_Address);
+
+#else
 
 //Ultrasonic sensor declarations
 //Limit argument changes the max distance (cm)
@@ -136,10 +137,18 @@ Infrared IR(1, IR_PINS, IR0, IR1, IR2, IR3, IR_IN);
 //---------------Main code---------------
 
 void setup(){
-    globalInit(3);
+    /*globalInit(0);
     Serial.println("4 pesos");
+    getAddress();*/
+    Serial.begin(9600);
+    Serial.println("start");
 }
 
 void loop(){
-    gp(0);
+    IR.read(1, 0);
+    /*for(int i = 0; i < 16; i++){
+        IR.setMux(IR_PINS[i]);
+        Serial.println(S(i) + " " + S(IR_PINS[i]));
+        delay(10000);
+    }*/
 }

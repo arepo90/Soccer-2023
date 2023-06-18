@@ -6,7 +6,7 @@
 #define defs_h
 
 //General behaviour (0: master, 1: slave)
-#define ROBOT_ID 0
+#define ROBOT_ID 1
 
 //-----------Libraries and definitions-----------
 
@@ -163,20 +163,24 @@ class Wireless{
 };
 
 #else
-
+/*
 class I2C{
     private:
         int id;
         int ADDRESS;
         int MSG_LENGTH;
+        int IR;
+        int COMP;
+        int US1;
+        int US2;
     public:
         I2C(int id, int ADDRESS, int MSG_LENGTH);
         void init();
-        void sendMsg(int IR, int COMP, int U1, int U2);
-        void receiveMsg();
+        static void sendMsg();
+        static void receiveMsg();
         void debug();
 };
-
+*/
 #endif
 
 #endif
