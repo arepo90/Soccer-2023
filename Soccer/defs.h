@@ -1,12 +1,12 @@
 /*
-    Libraries, hardware classes and general functions
+    Headers for libraries, hardware classes and general functions
 */
 
 #ifndef defs_h
 #define defs_h
 
 //General behaviour (0: master, 1: slave)
-#define ROBOT_ID 1
+#define ROBOT_ID 0
 
 //-----------Libraries and definitions-----------
 
@@ -33,11 +33,8 @@ struct WLmsg{
 
 //---------------General functions---------------
 
-bool checkDelay(int time);
 double degToDec(int x);
 int decToDeg(double x);
-void memSave(int n, int target);
-int memRead(int target);
 
 //---------------Hardware classes---------------
 
@@ -74,7 +71,7 @@ class Light{
 
 
 //Ultrasonic sensors class
-class US{
+class Ulatrasonic{
     private:
         int TRIG;
         int ECHO;
@@ -84,7 +81,7 @@ class US{
         int id;
         NewPing* sonar;
     public:
-        US(int id, int TRIG, int ECHO, int DIS_LIM);
+        Ulatrasonic(int id, int TRIG, int ECHO, int DIS_LIM);
         int read();
         void debug();
 };
@@ -121,7 +118,7 @@ class Infrared{
         int DELAY;
         int CERTAINTY;
     public:
-        Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY);
+        Infrared(int id, int *pins, int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY);
         void setMux(int n);
         double read(int mode);
         void debug();
@@ -145,13 +142,14 @@ class I2C{
         void parseMsg(String str);
         int requestMsg();
         double read(String str, int mode);
+        void getInfo(int &IR, int &COMP, int &US1, int &US2);
         void debug();
 };
 
 void WLsendCB(const uint8_t *ADDRESS, esp_now_send_status_t status);
 void WLreceiveMsg(const uint8_t *ADDRESS, const uint8_t *package, int n);
 
-//ESP-NOW Wireless communications class
+//ESP-NOW wireless communications class
 class Wireless{
     private:
         int id;

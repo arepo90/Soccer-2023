@@ -12,14 +12,14 @@ void followPath(double angle){
     M3.move(int(POW3 * sin(PI*angle + 3.0*PI/4.0)));
     M4.move(int(POW4 * sin(PI*angle + PI/4.0)));
 }
-
+/*
 //Follow path for given direction with angle correction [-1, 1]
 void vectorControl(double angle){
     if(readLines()){
         line();
         return;
     }
-    //double error = Comp.read(1);
+    double error = Comp.read(1);
     if(error > 0.0) error -= double(C_LIM)/360.0;
     else error += double(C_LIM)/360.0;
     followPath(angle);
@@ -30,7 +30,7 @@ void vectorControl(double angle){
         M4.update(abs(POW4 * error * FACTOR));
     }
 }
-
+*/
 //---------------Game functions---------------
 
 //Game plan (0: master, 1: slave)
@@ -67,10 +67,9 @@ void comeback(){
         line();
         return;
     }
-    vectorControl(1.0);
+    //vectorControl(1.0);
 }
-
-
+/*
 //Returning when no ball is detected with US - WIP heavy testing required
 void usComeback(){
     //int dis1 = U1.read(), dis2 = U2.read();
@@ -107,7 +106,7 @@ void orientation(){
     //double angle = Comp.read(1);
     rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
 }
-
+*/
 #else
 
  

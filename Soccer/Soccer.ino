@@ -1,5 +1,5 @@
 /*
-    Main code v2.0 early - 17/06/2023 - Soccer 2023
+    Main code v2.0 early 2 - 18/06/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
     RoboCup version
@@ -129,8 +129,8 @@ Wireless WL(0, WL_Address);
 
 //Ultrasonic sensor declarations
 //Limit argument changes the max distance (cm)
-US U1(1, US_T1, US_E1, US_LIM);
-US U2(2, US_T2, US_E2, US_LIM);
+Ultrasonic U1(1, US_T1, US_E1, US_LIM);
+Ulatrasonic U2(2, US_T2, US_E2, US_LIM);
 
 //Compass sensor declarations
 //Limit argument sets north threshold (symmetrical, in degrees)

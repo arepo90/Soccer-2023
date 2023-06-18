@@ -112,7 +112,7 @@ void Light::debug(){
 }
 
 //US sensor setup and pin declaration
-US::US(int id, int TRIG, int ECHO, int DIS_LIM){
+Ulatrasonic::Ulatrasonic(int id, int TRIG, int ECHO, int DIS_LIM){
     this->id = id;
     this->TRIG = TRIG;
     this->ECHO = ECHO;
@@ -121,12 +121,12 @@ US::US(int id, int TRIG, int ECHO, int DIS_LIM){
 }
 
 //Distance read (cm)
-int US::read(){
+int Ulatrasonic::read(){
     return sonar->ping_cm();
 }
 
 //Debug info in serial monitor
-void US::debug(){
+void Ulatrasonic::debug(){
     Serial.print(" US");
     Serial.print(id);
     Serial.print(": ");
@@ -181,7 +181,7 @@ void Compass::debug(){
 }
 
 //IR sensor and Multiplexer setup
-Infrared::Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY){
+Infrared::Infrared(int id, int *pins, int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY){
     this->id = id;
     this->Mux0 = Mux0;
     this->Mux1 = Mux1;
@@ -190,14 +190,12 @@ Infrared::Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, i
     this->Mux_IN = Mux_IN;
     this->SAMPLES = SAMPLES;
     this->DELAY = DELAY;
+    memcpy(this->PINS, pins, sizeof(this->PINS));
     pinMode(Mux0, OUTPUT);
     pinMode(Mux1, OUTPUT);
     pinMode(Mux2, OUTPUT);
     pinMode(Mux3, OUTPUT);
     pinMode(Mux_IN, INPUT);
-    for(int i = 0; i < 16; i++){
-        PINS[i] = pins[i];
-    }
 }
 
 //Write 4-bit number to IR multiplexer
@@ -328,16 +326,26 @@ double I2C::read(String type, int mode){
     return double(NaN);
 }
 
+//Getter for all buffers
+void I2C::getInfo(int &IR, int &COMP, int &US1, int &US2){
+    this->requestMsg();
+    IR = IR_STATE;
+    COMP = COMP_STATE;
+    US1 = US1_STATE;
+    US2 = US2_STATE;
+}
+
 //Debug info in serial monitor
 void I2C::debug(){
+    this->getInfo(IR_STATE, COMP_STATE, US1_STATE, US2_STATE);
     Serial.print(" I2C IR: ");
-    Serial.print(this->read("IR", 0));
+    Serial.print(IR_STATE);
     Serial.print(" COMP: ");
-    Serial.print(this->read("COMP", 0));
+    Serial.print(COMP_STATE);
     Serial.print(" US1: ");
-    Serial.print(this->read("US", 0));
+    Serial.print(US1_STATE);
     Serial.print(" US2: ");
-    Serial.println(this->read("US", 1));
+    Serial.println(US2_STATE);
 }
 
 //Wireless communication setup

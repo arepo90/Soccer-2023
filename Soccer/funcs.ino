@@ -14,8 +14,9 @@ void globalInit(int mode){
         }
     }
     #if ROBOT_ID == 0
-        if(mode == 2 || mode == 4) Comp.init();
         if(mode >= 3) WL.init();
+    #else
+        if(mode == 2 || mode == 4) Comp.init();
     #endif
     Serial.print("de a ");
 }
