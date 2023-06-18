@@ -1,21 +1,23 @@
 /*
-    Main code v2.0 beta - 16/06/2023 - Soccer 2023
+    Main code v2.0 early - 17/06/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
     RoboCup version
-    No idea what to do with the new IR uncertainty
+    IR SENSOR WORKS LETS GOOOOO
+    Should test with different parameters
 
     *NEW*
     Robot behaviour is now chosen through parameters
     ROBOT_ID in defs.h will determine slave/master
+
+    *TODO*
+    Check that comms functions work with classes
+    Rewrite gp and helper functions
 */
 
 #include "defs.h"
 
 //---------------Hardware definitions---------------
-
-//I2C Slave address for ESP <-> ESP communications
-#define COMMS_ADDRESS 69
 
 //Motor 1 - Back Left
 #define PWM_A1 1
@@ -74,7 +76,12 @@
 #define IR2 25
 #define IR3 33
 #define IR_IN 32
+#define IR_SAMPLES 500
+#define IR_DELAY 5
 int IR_PINS[16] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 14, 13, 1, 0};
+
+//I2C Slave address for ESP <-> ESP communications
+#define COMMS_ADDRESS 69
 
 //Motor powers
 #define POW1 60
@@ -130,25 +137,17 @@ US U2(2, US_T2, US_E2, US_LIM);
 Compass Comp(1, C1, C2, C_LIM);
 
 //IR Seeker declarations
-Infrared IR(1, IR_PINS, IR0, IR1, IR2, IR3, IR_IN);
+Infrared IR(1, IR_PINS, IR0, IR1, IR2, IR3, IR_IN, IR_SAMPLES, IR_DELAY);
 
 #endif
 
 //---------------Main code---------------
 
 void setup(){
-    /*globalInit(0);
+    globalInit(0);
     Serial.println("4 pesos");
-    getAddress();*/
-    Serial.begin(9600);
-    Serial.println("start");
 }
 
 void loop(){
-    IR.read(1, 0);
-    /*for(int i = 0; i < 16; i++){
-        IR.setMux(IR_PINS[i]);
-        Serial.println(S(i) + " " + S(IR_PINS[i]));
-        delay(10000);
-    }*/
+    //IR.read(0);
 }

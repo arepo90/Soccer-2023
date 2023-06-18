@@ -2,8 +2,8 @@
     Game Plan
     Priorities: Orientation, Line, Ball, Return (WIP)
 */
-/*
-//----------Movement helper functions----------
+
+#if ROBOT_ID == 0
 
 //Motor control for a given angle [-1, 1]
 void followPath(double angle){
@@ -33,17 +33,10 @@ void vectorControl(double angle){
 
 //---------------Game functions---------------
 
-void master(){
-    return;
-}
-void slave(){
-    return;
-}
-
 //Game plan (0: master, 1: slave)
 void gp(int mode){
-    if(mode == 0) master();
-    else slave();
+    
+    return;    
 }
 
 //Staying within boundaries
@@ -114,4 +107,9 @@ void orientation(){
     //double angle = Comp.read(1);
     rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
 }
-*/
+
+#else
+
+ 
+
+#endif

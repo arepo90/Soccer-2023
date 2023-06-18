@@ -5,6 +5,7 @@
 #include "defs.h"
 
 WLmsg WLMSG;
+int I2C_IR, I2C_COMP, I2C_US1, I2C_US2;
 
 //---------------General functions---------------
 
@@ -132,7 +133,7 @@ void US::debug(){
     Serial.print(this->read());
 }
 
-//Compass sensor setup and I2C Communication
+//Compass sensor setup
 Compass::Compass(int id, int C1, int C2, int LIM){
     this->id = id;
     this->LIM = LIM;
@@ -162,7 +163,7 @@ bool Compass::north(){
     else return false;
 }
 
-//Initialize I2C communication
+//Initialise I2C communication
 void Compass::init(){
     OFFSET = this->read(0);
 }
@@ -180,13 +181,15 @@ void Compass::debug(){
 }
 
 //IR sensor and Multiplexer setup
-Infrared::Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN){
+Infrared::Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY){
     this->id = id;
     this->Mux0 = Mux0;
     this->Mux1 = Mux1;
     this->Mux2 = Mux2;
     this->Mux3 = Mux3;
     this->Mux_IN = Mux_IN;
+    this->SAMPLES = SAMPLES;
+    this->DELAY = DELAY;
     pinMode(Mux0, OUTPUT);
     pinMode(Mux1, OUTPUT);
     pinMode(Mux2, OUTPUT);
@@ -209,8 +212,8 @@ void Infrared::setMux(int n){
     if(n < 0 || n > 1) Serial.println("Overflow in multiplexer");
 }
 
-//Read IR sensors with mutiplexers through given methods (0: max_element, 1: vector sum)
-double Infrared::read(int method, int mode){
+//Takes samples of IR sensors with MUX to calculate the vector sum (0: [0, 360], 1: [-1, 1])
+double Infrared::read(int mode){
     int arr[16], maxi = -1;
     bool flag = false;
     for(int i = 0; i < 16; i++){
@@ -221,28 +224,12 @@ double Infrared::read(int method, int mode){
                 flag = true;
                 cont++;
             }
-            delayMicroseconds(10);
+            delayMicroseconds(DELAY);
         }
         maxi = max(maxi, cont);
         arr[i] = cont;
     }
-    /*Serial.print(arr[0]);
-    Serial.print("\t");
-    Serial.print(arr[2]);
-    Serial.print("\t");
-    Serial.print(arr[4]);
-    Serial.print("\n");*/
-    if(!flag) /*return double(NaN);*/
-    if(method == 0){
-        double angle = 0.0, cont = 0.0;
-        for(int i = 0; i < 16; i++){
-            if(arr[i] == maxi){
-                angle += 22.5 * double(i);
-                cont++;
-            }
-        }
-        return (angle / cont);
-    }
+    if(!flag) return double(NaN);
     double angle, c_x = 0.0, c_y = 0.0;
     for(int i = 0; i < 16; i++){
         c_x += double(arr[i]) / double(SAMPLES) * sin(radians(double(i) * 22.5));
@@ -252,28 +239,33 @@ double Infrared::read(int method, int mode){
     if(c_x >= 0.0) angle = 90.0 - angle;
     else angle = 270 - angle;
     CERTAINTY = sqrt((c_x*c_x) + (c_y*c_y));
-    Serial.println(" x: " + S(c_x) + " y: " + S(c_y));
-    Serial.print(angle);
-    Serial.print("\t");
-    Serial.print(CERTAINTY);
-    Serial.print("\n");
     if(mode == 0) return angle;
     return degToDec(angle);
 }
 
-/*I2C::I2C(int id, int ADDRESS, int MSG_LENGTH){
+//Debug info in serial monitor
+void Infrared::debug(){
+    Serial.print(" IR: ");
+    Serial.print(this->read(0));
+    Serial.print(" CERTAINTY: ");
+    Serial.println(CERTAINTY);
+}
+
+I2C::I2C(int id, int ADDRESS, int MSG_LENGTH){
     this->id = id;
     this->ADDRESS = ADDRESS;
     this->MSG_LENGTH = MSG_LENGTH;
-}*/
+}
 
 #if ROBOT_ID == 0
 
+//Initialize I2C Slave <-> Master communications
 void I2C::init(){
     if(this->requestMsg() != 0) Serial.println("Problem in I2C I2C");
     else Serial.println("MCU <-> MCU I2C check complete");
 }
 
+//Translates byte array message into variables
 void I2C::parseMsg(String str){
     for(int i = 0; i < MSG_LENGTH; i++){
         switch(str[i]){
@@ -301,6 +293,7 @@ void I2C::parseMsg(String str){
     }
 }
 
+//Requests message from I2C Slave
 int I2C::requestMsg(){
     String msg = "";
     Wire.beginTransmission(ADDRESS);
@@ -316,6 +309,7 @@ int I2C::requestMsg(){
     return 0;
 }
 
+//Outputs desired info from buffer ("IR", "COMP", "US")
 double I2C::read(String type, int mode){
     this->requestMsg();
     if(type == "IR"){
@@ -328,12 +322,13 @@ double I2C::read(String type, int mode){
     }
     else if(type == "US"){
         if(mode == 0) return double(US1_STATE);
-            return double(US2_STATE);
+        return double(US2_STATE);
     }
     Serial.println("nuh uh");
     return double(NaN);
 }
 
+//Debug info in serial monitor
 void I2C::debug(){
     Serial.print(" I2C IR: ");
     Serial.print(this->read("IR", 0));
@@ -345,6 +340,7 @@ void I2C::debug(){
     Serial.println(this->read("US", 1));
 }
 
+//Wireless communication setup
 Wireless::Wireless(int id, uint8_t *ADDRESS){
     this->id = id;
     for(int i = 0; i < 6; i++){
@@ -352,55 +348,52 @@ Wireless::Wireless(int id, uint8_t *ADDRESS){
     }
 }
 
+//Initialise ESP-NOW wireless communications
 void Wireless::init(){
     WiFi.mode(WIFI_STA);
     esp_now_init();
-    esp_now_register_send_cb(this->sendCB);
-    esp_now_register_recv_cb(this->receiveMsg);
+    esp_now_register_send_cb(WLsendCB);
+    esp_now_register_recv_cb(WLreceiveMsg);
     memcpy(ESP.peer_addr, ADDRESS, 6);
     ESP.channel = 0;
     ESP.encrypt = false;
     esp_now_add_peer(&ESP);
 }
 
-void Wireless::sendCB(const uint8_t *ADDRESS, esp_now_send_status_t status){
+//Callback function for message deliveries
+void WLsendCB(const uint8_t *ADDRESS, esp_now_send_status_t status){
     Serial.print(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery failed");
 }
 
-void Wireless::receiveMsg(const uint8_t *ADDRESS, const uint8_t *package, int n){
+//Handler for received messages
+void WLreceiveMsg(const uint8_t *ADDRESS, const uint8_t *package, int n){
     memcpy(&WLMSG, package, sizeof(WLMSG));
 }
 
+//Handler for sending messages
 void Wireless::send(){
     WLmsg msg;
     esp_err_t status = esp_now_send(ADDRESS, (uint8_t *) &msg, sizeof(msg));
     Serial.println(status == ESP_OK ? "Message sent" : "Error sending message");
 }
 
+//Read wireless info package
 WLmsg Wireless::read(){
     return WLMSG;
 }
 
 #else
-/*
+
+//Initialise I2C communications
 void I2C::init(){
     Wire.onRequest(this->sendMsg);
-    Wire.onReceive(this->receiveMsg);
 }
 
-static void I2C::sendMsg(){
+//Handler for sending I2C messages to master
+void I2C::sendMsg(){
     char buf[21];
-    sprintf(buf, "SI%03dXC%03dXU%03dXu%03dE", IR, COMP, US1, US2);
+    sprintf(buf, "SI%03dXC%03dXU%03dXu%03dE", I2C_IR, I2C_COMP, I2C_US1, I2C_US2);
     Wire.write(buf);
 }
 
-static void I2C::receiveMsg(){
-    Serial.print("Message received:");
-    while(Wire.available()){
-        char msg = Wire.read();
-        Serial.print(" " + S(msg));
-    }
-    Serial.println(" End of Message");
-}
-*/
 #endif

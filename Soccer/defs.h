@@ -27,9 +27,6 @@ typedef String S;
 #define FREQ 5000
 #define RES 8
 
-//IR settings
-#define SAMPLES 500
-
 struct WLmsg{
     int id;
 };
@@ -92,7 +89,7 @@ class US{
         void debug();
 };
 
-//Compas sensor class
+//Compass sensor class
 class Compass{
     private:
         int ADDRESS;
@@ -110,25 +107,29 @@ class Compass{
         void debug();
 };
 
+//Custom infrared sensor class
 class Infrared{
     private:
+        int id;
         int PINS[16];
         int Mux0;
         int Mux1;
         int Mux2;
         int Mux3;
         int Mux_IN;
-        int CERTAINTY = -1;
-        int id;
+        int SAMPLES;
+        int DELAY;
+        int CERTAINTY;
     public:
-        Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN);
+        Infrared(int id, int pins[], int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY);
         void setMux(int n);
-        double read(int method, int mode);
+        double read(int mode);
         void debug();
 };
 
 #if ROBOT_ID == 0
 
+//Master I2C communications class
 class I2C{
     private:
         int id;
@@ -147,6 +148,10 @@ class I2C{
         void debug();
 };
 
+void WLsendCB(const uint8_t *ADDRESS, esp_now_send_status_t status);
+void WLreceiveMsg(const uint8_t *ADDRESS, const uint8_t *package, int n);
+
+//ESP-NOW Wireless communications class
 class Wireless{
     private:
         int id;
@@ -155,32 +160,29 @@ class Wireless{
     public:
         Wireless(int id, uint8_t *ADDRESS);
         void init();
-        static void sendCB(const uint8_t *ADDRESS, esp_now_send_status_t status);
-        static void receiveMsg(const uint8_t *ADDRESS, const uint8_t *package, int n);
         void send();
         WLmsg read();
         void debug();
 };
 
 #else
-/*
+
+void I2CsendMsg();
+
+//Slave I2C communications class
 class I2C{
     private:
         int id;
         int ADDRESS;
         int MSG_LENGTH;
-        int IR;
-        int COMP;
-        int US1;
-        int US2;
     public:
         I2C(int id, int ADDRESS, int MSG_LENGTH);
         void init();
+        void update(int I2C_IR, int I2C_COMP, int I2C_US1, int I2C_US2);
         static void sendMsg();
-        static void receiveMsg();
         void debug();
 };
-*/
+
 #endif
 
 #endif
