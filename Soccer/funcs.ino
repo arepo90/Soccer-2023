@@ -29,29 +29,12 @@ void getAddress(){
     Serial.println(WiFi.macAddress());
 }
 
-//Reads lines and returns true if any are active
-bool readLines(){
-    lin1 = L1.read();
-    lin2 = L2.read();
-    lin3 = L3.read();
-    lin4 = L4.read();
-    return (lin1 + lin2 + lin3 + lin4);
-}
-
 //Debug motor power
 void motorDebug(){
     M1.debug();
     M2.debug();
     M3.debug();
     M4.debug();
-}
-
-//Debug light values
-void lightDebug(){
-    L1.debug();
-    L2.debug();
-    L3.debug();
-    L4.debug();
 }
 
 #else

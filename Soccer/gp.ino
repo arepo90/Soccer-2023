@@ -42,7 +42,7 @@ void gp(int mode){
 //Staying within boundaries
 //The delay system only works well with POWER < 60
 void line(){
-    if(lin3){
+    /*if(lin3){
         bwd((lin3 == 1 ? 2 : lin3));
         if(lin3 >= 2) delay(DEL);
     }
@@ -58,15 +58,15 @@ void line(){
         lef((lin4 == 1 ? 2 : lin4));
         if(lin4 >= 2) delay(DEL);
     }
-    else Serial.println("If you are reading this, there is a memory leak :p");
+    else Serial.println("If you are reading this, there is a memory leak :p");*/
 }
 
 //Returning when no ball detected - WIP - Ultrasonics are NOT reliable
 void comeback(){
-    if(readLines()){
+    /*if(readLines()){
         line();
         return;
-    }
+    }*/
     //vectorControl(1.0);
 }
 /*

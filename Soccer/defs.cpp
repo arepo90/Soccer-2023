@@ -32,8 +32,8 @@ Motor::Motor(int id, int PWM_A, int PWM_B, int defPow){
     this->defPow = defPow;
     ledcSetup((id*2), FREQ, RES);
     ledcSetup((id*2+1), FREQ, RES);
-    ledcAttachPin(PWM_A, (id*4));
-    ledcAttachPin(PWM_B, (id*4+1));
+    ledcAttachPin(PWM_A, (id*2));
+    ledcAttachPin(PWM_B, (id*2+1));
 }
 
 //Set motor power (-255 -> 255)
@@ -78,41 +78,45 @@ void Motor::debug(){
 }
 
 //Light sensor setup and pin declaration
-Light::Light(int id, int PIN_A, int PIN_B, int LIM_A, int LIM_B){
+Light::Light(int id, int *PINS, int *LIMS){
     this->id = id;
-    this->PIN_A = PIN_A;
-    this->PIN_B = PIN_B;
-    this->LIM_A = LIM_A;
-    this->LIM_B = LIM_B;
-    pinMode(PIN_A, INPUT);
-    pinMode(PIN_B, INPUT);
+    memcpy(this->PINS, PINS, sizeof(this->PINS));
+    memcpy(this->LIMS, LIMS, sizeof(this->LIMS));
+    for(int i = 0; i < 12; i++){
+        pinMode(PINS[i], INPUT);
+    }
 }
 
-//Read sensor block state (0: None, 1: Outer, 2: Both, 3: Outer)
-int Light::read(){
-    bool temp1 = false, temp2 = false;
-    if(analogRead(PIN_A) >= LIM_A) temp1 = true;
-    if(analogRead(PIN_B) >= LIM_B) temp2 = true;
-    if(temp1 && temp2) return 2;
-    else if(temp2) return 3;
-    else if(temp1) return 1;
-    else return 0;
+//Read sensor block state (0: [0, 360], 1: [-1, 1])
+double Light::read(int mode){
+    double angle = 0.0, cont = 0.0;
+    for(int i = 0; i < 12; i++){
+        if(analogRead(PINS[i]) > LIMS[i]){
+            angle += 30.0 * double(i);
+            cont++;
+        }
+    }
+    if(cont == 0.0) return double(NaN);
+    angle /= cont;
+    if(mode == 0) return angle;
+    return degToDec(angle);
 }
 
 //Debug info in serial monitor
 void Light::debug(){
-    Serial.print(" Light");
-    Serial.print(id);
-    Serial.print(": ");
-    Serial.print(this->read());
-    Serial.print(" L_A: ");
-    Serial.print(analogRead(PIN_A));
-    Serial.print(" L_B: ");
-    Serial.print(analogRead(PIN_B));
+    Serial.print(" Light: ");
+    for(int i = 0; i < 12; i++){
+        Serial.print(" L");
+        Serial.print(id);
+        Serial.print(": ");
+        Serial.print(analogRead(PINS[i]);
+    }
+    Serial.print(" ANGLE: ");
+    Serial.println(this->read(0));
 }
 
 //US sensor setup and pin declaration
-Ulatrasonic::Ulatrasonic(int id, int TRIG, int ECHO, int DIS_LIM){
+Ultrasonico::Ultrasonico(int id, int TRIG, int ECHO, int DIS_LIM){
     this->id = id;
     this->TRIG = TRIG;
     this->ECHO = ECHO;
@@ -121,12 +125,12 @@ Ulatrasonic::Ulatrasonic(int id, int TRIG, int ECHO, int DIS_LIM){
 }
 
 //Distance read (cm)
-int Ulatrasonic::read(){
+int Ultrasonico::read(){
     return sonar->ping_cm();
 }
 
 //Debug info in serial monitor
-void Ulatrasonic::debug(){
+void Ultrasonico::debug(){
     Serial.print(" US");
     Serial.print(id);
     Serial.print(": ");
@@ -181,7 +185,7 @@ void Compass::debug(){
 }
 
 //IR sensor and Multiplexer setup
-Infrared::Infrared(int id, int *pins, int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY){
+Infrared::Infrared(int id, int *PINS, int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY){
     this->id = id;
     this->Mux0 = Mux0;
     this->Mux1 = Mux1;
@@ -190,7 +194,7 @@ Infrared::Infrared(int id, int *pins, int Mux0, int Mux1, int Mux2, int Mux3, in
     this->Mux_IN = Mux_IN;
     this->SAMPLES = SAMPLES;
     this->DELAY = DELAY;
-    memcpy(this->PINS, pins, sizeof(this->PINS));
+    memcpy(this->PINS, PINS, sizeof(this->PINS));
     pinMode(Mux0, OUTPUT);
     pinMode(Mux1, OUTPUT);
     pinMode(Mux2, OUTPUT);
@@ -207,36 +211,42 @@ void Infrared::setMux(int n){
     digitalWrite(Mux2, (n % 2 == 0 ? 0 : 1));
     n /= 2;
     digitalWrite(Mux3, (n % 2 == 0 ? 0 : 1));
-    if(n < 0 || n > 1) Serial.println("Overflow in multiplexer");
 }
 
+//TODO: Check with different sample size and delay, or full cycle for every check
 //Takes samples of IR sensors with MUX to calculate the vector sum (0: [0, 360], 1: [-1, 1])
 double Infrared::read(int mode){
-    int arr[16], maxi = -1;
+    int arr[16];
+    memset(arr, 0, sizeof(arr));
     bool flag = false;
     for(int i = 0; i < 16; i++){
         this->setMux(PINS[i]);
-        int cont = 0;
         for(int j = 0; j < SAMPLES; j++){
             if(digitalRead(Mux_IN) == 0){
                 flag = true;
-                cont++;
+                arr[i]++;
             }
             delayMicroseconds(DELAY);
         }
-        maxi = max(maxi, cont);
-        arr[i] = cont;
     }
+    /*for(int i = 0; i < SAMPLES; i++){
+        for(int j = 0; j < 16; j++){
+            this->setMux(PINS[j]);
+            if(digitalRead(MUX_IN) == 0){
+                flag = true;
+                arr[j]++;
+            }
+            delayMicroseconds(DELAY);
+        }
+    }*/
     if(!flag) return double(NaN);
     double angle, c_x = 0.0, c_y = 0.0;
     for(int i = 0; i < 16; i++){
         c_x += double(arr[i]) / double(SAMPLES) * sin(radians(double(i) * 22.5));
         c_y += double(arr[i]) / double(SAMPLES) * cos(radians(double(i) * 22.5));
     }
-    angle = degrees(atan(c_y / c_x));
-    if(c_x >= 0.0) angle = 90.0 - angle;
-    else angle = 270 - angle;
-    CERTAINTY = sqrt((c_x*c_x) + (c_y*c_y));
+    angle = (c_x >= 0 ? 90.0 : 270.0) - degrees(atan(c_y / c_x));
+    CERTAINTY = sqrt(sq(c_x) + sq(c_y));
     if(mode == 0) return angle;
     return degToDec(angle);
 }

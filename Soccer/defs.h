@@ -58,30 +58,27 @@ class Motor{
 //Light sensors class
 class Light{
     private:
-        int PIN_A;
-        int PIN_B;
-        int LIM_A;
-        int LIM_B;
+        int PINS[12];
+        int LIMS[12];
         int id;
     public:
-        Light(int id, int PIN_A, int PIN_B, int LIM_A, int LIM_B);
-        int read();
+        Light(int id, int *PINS, int *LIMS);
+        double read();
         void debug();
 };
 
 
 //Ultrasonic sensors class
-class Ulatrasonic{
+class Ultrasonico{
     private:
         int TRIG;
         int ECHO;
         int DIS_LIM;
-        bool arg;
         int past = 0;
         int id;
         NewPing* sonar;
     public:
-        Ulatrasonic(int id, int TRIG, int ECHO, int DIS_LIM);
+        Ultrasonico(int id, int TRIG, int ECHO, int DIS_LIM);
         int read();
         void debug();
 };
@@ -118,7 +115,7 @@ class Infrared{
         int DELAY;
         int CERTAINTY;
     public:
-        Infrared(int id, int *pins, int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY);
+        Infrared(int id, int *PINS, int Mux0, int Mux1, int Mux2, int Mux3, int Mux_IN, int SAMPLES, int DELAY);
         void setMux(int n);
         double read(int mode);
         void debug();
