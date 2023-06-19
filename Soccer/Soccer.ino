@@ -1,22 +1,23 @@
 /*
-    Main code v2.0 early 3 - 19/06/2023 - Soccer 2023
+    Main code v2.0 early 4 - 19/06/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
-    RoboCup version - Unstable, won't compile (probably)
+    RoboCup version
+    Unstable, won't compile (probably)
 
     *NEW*
-    IR SENSOR WORKS LETS GOOOOO
-    Should test with different parameters
-    Robot behaviour is now chosen through parameters
-    ROBOT_ID in defs.h will determine slave/master
+    IR SENSOR WORKS LETS GOOOOO (Should test with different parameters)
+    Robot behaviour is now modified through #define's in defs.h
 
     *TODO*
+    Modify ROBOT_ID and include a gk/gs #define
     Check that comms functions work with classes
     Rewrite gp and helper functions
-    Check compilation errors
+    Set up two cores and according tasks
 */
 
 #include "defs.h"
+TaskHandle_t primary, secondary;
 
 //---------------Hardware definitions---------------
 
@@ -52,8 +53,8 @@ int LIGHT_PINS[] = {15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15},
 #define MAX_DIS 60
 
 //Compass address, message and limit
-#define C1 0x01
-#define C2 0x44
+#define C_ADDRESS 0x01
+#define C_MSG 0x44
 #define C_LIM 5
 
 //IR pins and detection
@@ -86,11 +87,7 @@ int IR_PINS[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 14, 13, 1, 0};
 #define DEL 200
 
 //Wireless comms address
-uint8_t WL_Address[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-
-//Helper variables
-int lin1 = 0, lin2 = 0, lin3 = 0, lin4 = 0;
-bool led = true;
+uint8_t WL_ADDRESS[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 //---------------Hardware classes declarations---------------
 
@@ -108,7 +105,7 @@ Motor M4(3, PWM_A4, PWM_B4, POW4);
 //Last argument changes the limit's source (0: setLim(), 1: EEPROM)
 Light LS(1, LIGHT_PINS, LIGHT_LIMS);
 
-Wireless WL(0, WL_Address);
+Wireless WL(1, WL_ADDRESS);
 
 #else
 
@@ -119,7 +116,7 @@ Ultrasonico U2(2, US_T2, US_E2, US_LIM);
 
 //Compass sensor declarations
 //Limit argument sets north threshold (symmetrical, in degrees)
-Compass Comp(1, C1, C2, C_LIM);
+Compass Comp(1, C_ADDRESS, C_MSG, C_LIM);
 
 //IR Seeker declarations
 Infrared IR(1, IR_PINS, IR0, IR1, IR2, IR3, IR_IN, IR_SAMPLES, IR_DELAY);
@@ -128,15 +125,25 @@ Infrared IR(1, IR_PINS, IR0, IR1, IR2, IR3, IR_IN, IR_SAMPLES, IR_DELAY);
 
 //---------------Main code---------------
 
+void primary_code(void *pvParameters){
+    while(1){
+
+    }
+}
+
+void secondary_code(void *pvParameters){
+    while(1){
+
+    }
+}
+
 void setup(){
-    //globalInit(0);
-    Serial.begin(115200);
+    globalInit(0);
+    xTaskCreatePinnedToCore(primary_code, "primary", 10000, NULL, 1, &primary, 0);
+    xTaskCreatePinnedToCore(secondary_code, "secondary", 10000, NULL, 1, &secondary, 1);
     Serial.println("4 pesos");
 }
 
 void loop(){
-    M1.test();
-    M2.test();
-    M3.test();
-    M4.test();
+    vTaskDelete(NULL);
 }

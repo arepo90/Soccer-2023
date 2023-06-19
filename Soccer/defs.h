@@ -63,7 +63,7 @@ class Light{
         int id;
     public:
         Light(int id, int *PINS, int *LIMS);
-        double read();
+        double read(int mode);
         void debug();
 };
 
@@ -86,13 +86,13 @@ class Ultrasonico{
 //Compass sensor class
 class Compass{
     private:
-        int ADDRESS;
-        int REQ;
-        int OFFSET = 0;
-        int LIM;
         int id;
+        int C_ADDRESS;
+        int C_MSG;
+        int C_LIM;
+        int OFFSET = 0;
     public:
-        Compass(int id, int C1, int C2, int LIM);
+        Compass(int id, int C_ADDRESS, int C_MSG, int LIM);
         double read(int mode);
         bool north();
         int getOffset();

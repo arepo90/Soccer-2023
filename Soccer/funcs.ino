@@ -23,7 +23,7 @@ void globalInit(int mode){
 
 #if ROBOT_ID == 0
 
-//Prints the MAC Address
+//Print the MAC Address (only call this in void setup)
 void getAddress(){
     WiFi.mode(WIFI_MODE_STA);
     Serial.println(WiFi.macAddress());

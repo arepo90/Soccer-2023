@@ -1,6 +1,6 @@
 /*
     Game Plan
-    Priorities: Orientation, Line, Ball, Return (WIP)
+    Very WIP
 */
 
 #if ROBOT_ID == 0

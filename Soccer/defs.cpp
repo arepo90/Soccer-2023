@@ -109,7 +109,7 @@ void Light::debug(){
         Serial.print(" L");
         Serial.print(id);
         Serial.print(": ");
-        Serial.print(analogRead(PINS[i]);
+        Serial.print(analogRead(PINS[i]));
     }
     Serial.print(" ANGLE: ");
     Serial.println(this->read(0));
@@ -138,20 +138,25 @@ void Ultrasonico::debug(){
 }
 
 //Compass sensor setup
-Compass::Compass(int id, int C1, int C2, int LIM){
+Compass::Compass(int id, int C_ADDRESS, int C_MSG, int C_LIM){
     this->id = id;
-    this->LIM = LIM;
-    ADDRESS = C1;
-    REQ = C2;
+    this->C_ADDRESS = C_ADDRESS;
+    this->C_MSG = C_MSG;
+    this->C_LIM = C_LIM;
+}
+
+//Initialise I2C communication
+void Compass::init(){
+    OFFSET = this->read(0);
 }
 
 //Angle read by mode (0: [0, 360], 1: [-1, 1])
 double Compass::read(int mode){
     byte buffer[2];
-    Wire.beginTransmission(ADDRESS);
-    Wire.write(REQ);
+    Wire.beginTransmission(C_ADDRESS);
+    Wire.write(C_MSG);
     Wire.endTransmission();
-    Wire.requestFrom(ADDRESS, 2); 
+    Wire.requestFrom(C_ADDRESS, 2); 
     buffer[0] = Wire.read();
     buffer[1] = Wire.read();
     int angle = word(buffer[1], buffer[0]) - OFFSET;
@@ -163,13 +168,8 @@ double Compass::read(int mode){
 //Check if compass is pointing towards (fake) north
 bool Compass::north(){
     int angle = this->read(0);
-    if(angle < LIM || angle > 360-LIM) return true;
+    if(angle < C_LIM || angle >  360 - C_LIM) return true;
     else return false;
-}
-
-//Initialise I2C communication
-void Compass::init(){
-    OFFSET = this->read(0);
 }
 
 //Debug info in serial monitor
@@ -361,9 +361,7 @@ void I2C::debug(){
 //Wireless communication setup
 Wireless::Wireless(int id, uint8_t *ADDRESS){
     this->id = id;
-    for(int i = 0; i < 6; i++){
-        this->ADDRESS[i] = ADDRESS[i];
-    }
+    memcpy(this->ADDRESS, ADDRESS, sizeof(this->ADDRESS));
 }
 
 //Initialise ESP-NOW wireless communications

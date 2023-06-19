@@ -1,6 +1,6 @@
 /*
     Main movement dynamics
-    Positive power rotates counterclockwise
+    Positive power translates to counterclockwise rotation (of the robot)
 */
 
 //---------------Movement functions---------------
