@@ -7,13 +7,13 @@ void globalInit(int mode){
     Serial.begin(9600);
     Serial.println("Tacos ");
     if(mode == 1 || mode == 4){
-        if(ROBOT_ID == 0) Wire.begin();
+        if(ESP_ID == 0) Wire.begin();
         else{
             Wire.begin(COMMS_ADDRESS);
             Comms.init();
         }
     }
-    #if ROBOT_ID == 0
+    #if ESP_ID == 0
         if(mode >= 3) WL.init();
     #else
         if(mode == 2 || mode == 4) Comp.init();
@@ -21,7 +21,7 @@ void globalInit(int mode){
     Serial.print("de a ");
 }
 
-#if ROBOT_ID == 0
+#if ESP_ID == 0
 
 //Print the MAC Address (only call this in void setup)
 void getAddress(){

@@ -5,7 +5,7 @@
 
 //---------------Movement functions---------------
 
-#if ROBOT_ID == 0
+#if ESP_ID == 0
 
 //Stop movement (0: regular, 1: hard brake)
 void stp(int mode){

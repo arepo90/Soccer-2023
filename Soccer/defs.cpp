@@ -87,17 +87,24 @@ Light::Light(int id, int *PINS, int *LIMS){
     }
 }
 
-//Read sensor block state (0: [0, 360], 1: [-1, 1])
+//Read sensor block vector (0: [0, 360], 1: [-1, 1], 2: magnitude)
 double Light::read(int mode){
-    double angle = 0.0, cont = 0.0;
+    if(mode == 2) return MAGNITUDE;
+    double c_x = 0.0, c_y = 0.0, angle;
+    bool flag = false;
     for(int i = 0; i < 12; i++){
         if(analogRead(PINS[i]) > LIMS[i]){
-            angle += 30.0 * double(i);
-            cont++;
+            c_x += sin(radians(double(i) * 30.0));
+            c_y += cos(radians(double(i) * 30.0));
+            flag = true;
         }
     }
-    if(cont == 0.0) return double(NaN);
-    angle /= cont;
+    if(!flag){
+        MAGNITUDE = double(NaN);
+        return double(NaN);
+    }
+    angle = (c_x >= 0 ? 90.0 : 270.0) - degrees(atan(c_y / c_x));
+    MAGNITUDE = sqrt(sq(c_x) + sq(c_y));
     if(mode == 0) return angle;
     return degToDec(angle);
 }
@@ -265,7 +272,7 @@ I2C::I2C(int id, int ADDRESS, int MSG_LENGTH){
     this->MSG_LENGTH = MSG_LENGTH;
 }
 
-#if ROBOT_ID == 0
+#if ESP_ID == 0
 
 //Translates byte array message into variables
 void I2C::parseMsg(String str){

@@ -6,7 +6,9 @@
 #define defs_h
 
 //General behaviour (0: master, 1: slave)
-#define ROBOT_ID 1
+#define ESP_ID 1
+//Game functions (0: attacker, 1: defender)
+#define ROBOT_ID 0
 
 //-----------Libraries and definitions-----------
 
@@ -58,9 +60,10 @@ class Motor{
 //Light sensors class
 class Light{
     private:
+        int id;
         int PINS[12];
         int LIMS[12];
-        int id;
+        double MAGNITUDE = 0.0;
     public:
         Light(int id, int *PINS, int *LIMS);
         double read(int mode);
@@ -121,7 +124,7 @@ class Infrared{
         void debug();
 };
 
-#if ROBOT_ID == 0
+#if ESP_ID == 0
 
 //Master I2C communications class
 class I2C{

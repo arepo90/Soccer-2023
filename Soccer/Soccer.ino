@@ -1,20 +1,20 @@
 /*
-    Main code v2.0 early 6 - 19/06/2023 - Soccer 2023
+    Main code v2.0 alpha 2 - 20/06/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
     RoboCup version
-    Unstable, very likely to break or just don't work
+    (nuh uh forget this) Unstable, very likely to break or crash
+    not working, wip, fix light and vector handling in gp.ino
 
     *NEW*
     IR SENSOR WORKS LETS GOOOOO (Should test with different parameters)
     I2C COMMS WORK WITH CLASSES LETS GOOOOO
     DUAL CORE WORKS LETS GOOOOO (I think, I didn't test it a lot, will 
-    prob need delays or something to stop watchdog or whatever crashed it)
+    prob need delays or something to stop watchdog or whatever reset it)
     Robot behaviour is now modified through #define's in defs.h
 
     *TODO*
-    Modify ROBOT_ID and include a gk/gs #define
-    Check that comms functions work with classes
+    Update US functions and check with TMR version
     Rewrite gp and helper functions
     Test dual core functionality and scheme what goes where and when
 */
@@ -75,13 +75,14 @@ int IR_PINS[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 14, 13, 1, 0};
 //I2C Slave address for ESP <-> ESP communications
 #define COMMS_ADDRESS 9
 
-//Motor powers
+//Motor max powers
 #define POW1 60
 #define POW2 60
 #define POW3 60
 #define POW4 60
 
 //Movement settings
+#define THRESHOLD 0.0
 #define DEF NaN
 #define BRAKE 200
 #define FACTOR 3.0
@@ -92,11 +93,15 @@ int IR_PINS[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 14, 13, 1, 0};
 //Wireless comms address
 uint8_t WL_ADDRESS[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
+//Helper variables
+double IR_ANGLE, COMP_ANGLE, US1_DIS, US2_DIS, LINE_ANGLE, LINE_MAG;
+double VECTOR_ANGLE, VECTOR_MAG;
+
 //---------------Hardware classes declarations---------------
 
 I2C Comms(0, COMMS_ADDRESS, 21);
 
-#if ROBOT_ID == 0
+#if ESP_ID == 0
 
 //Motor declarations
 Motor M1(0, PWM_A1, PWM_B1, POW1);
@@ -132,8 +137,7 @@ int a = 0, b = 0, c = 0, d = 0;
 
 void primary_code(void *pvParameters){
     while(1){
-        Comms.update(a, b, c, d);
-        delay(1);
+        gp();
     }
 }
 

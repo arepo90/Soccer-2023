@@ -3,27 +3,21 @@
     Very WIP
 */
 
-#if ROBOT_ID == 0
-
-//Motor control for a given angle [-1, 1]
-void followPath(double angle){
-    M1.move(int(POW1 * sin(PI*angle - PI/4.0)));
-    M2.move(int(POW2 * sin(PI*angle - 3.0*PI/4.0)));
-    M3.move(int(POW3 * sin(PI*angle + 3.0*PI/4.0)));
-    M4.move(int(POW4 * sin(PI*angle + PI/4.0)));
+//Motor control for a given vector [-1, 1]
+void followPath(double angle, double magnitude){
+    M1.move(int(magnitude * POW1 * sin(PI*angle - PI/4.0)));
+    M2.move(int(magnitude * POW2 * sin(PI*angle - 3.0*PI/4.0)));
+    M3.move(int(magnitude * POW3 * sin(PI*angle + 3.0*PI/4.0)));
+    M4.move(int(magnitude * POW4 * sin(PI*angle + PI/4.0)));
 }
-/*
-//Follow path for given direction with angle correction [-1, 1]
-void vectorControl(double angle){
-    if(readLines()){
-        line();
-        return;
-    }
-    double error = Comp.read(1);
-    if(error > 0.0) error -= double(C_LIM)/360.0;
-    else error += double(C_LIM)/360.0;
-    followPath(angle);
-    if(fabs(error) > 0.0){
+
+//Follow path for given vector with angle correction [-1, 1]
+void vectorControl(double angle, double magnitude){
+    double error = COMP_ANGLE;
+    if(error > 0.0) error -= double(C_LIM) / 360.0;
+    else error += double(C_LIM) / 360.0;
+    followPath(angle, magnitude);
+    if(fabs(error) > THRESHOLD){
         M1.update(abs(POW1 * error * FACTOR));
         M2.update(abs(POW2 * error * FACTOR));
         M3.update(abs(POW3 * error * FACTOR));
@@ -33,82 +27,79 @@ void vectorControl(double angle){
 */
 //---------------Game functions---------------
 
-//Game plan (0: master, 1: slave)
-void gp(int mode){
-    
-    return;    
+#if ROBOT_ID == 0
+
+//Game plan
+void gp(){
+    Comms.getInfo(IR_ANGLE, COMP_ANGLE, US1_DIS, US2_DIS);
+    LINE_ANGLE = LS.read(1); LINE_MAG = LS.read(3);
+    if(LINE_ANGLE != double(NaN)) lines();
+    else if(IR_ANGLE != double(NaN)) ball();
+    else usComeback();
 }
 
-//Staying within boundaries
-//The delay system only works well with POWER < 60
-void line(){
-    /*if(lin3){
-        bwd((lin3 == 1 ? 2 : lin3));
-        if(lin3 >= 2) delay(DEL);
-    }
-    else if(lin1){
-        fwd((lin1 == 1 ? 2 : lin1));
-        if(lin1 >= 2) delay(DEL);
-    }
-    else if(lin2){
-        rig((lin2 == 1 ? 2 : lin2));
-        if(lin2 >= 2) delay(DEL);
-    }
-    else if(lin4){
-        lef((lin4 == 1 ? 2 : lin4));
-        if(lin4 >= 2) delay(DEL);
-    }
-    else Serial.println("If you are reading this, there is a memory leak :p");*/
-}
+#else
 
-//Returning when no ball detected - WIP - Ultrasonics are NOT reliable
-void comeback(){
-    /*if(readLines()){
-        line();
-        return;
-    }*/
-    //vectorControl(1.0);
-}
-/*
-//Returning when no ball is detected with US - WIP heavy testing required
-void usComeback(){
-    //int dis1 = U1.read(), dis2 = U2.read();
-    if(dis1 == 0 || dis2 == 0) vectorControl(1.0);
-    else if(dis1 < dis2){
-        if(dis1 < MIN_DIS) vectorControl(0.5);
-        else if(dis1 > MAX_DIS) vectorControl(-0.75);
-        else vectorControl(1.0);
+//Game plan
+void gp(){
+    Comms.getInfo(IR_ANGLE, COMP_ANGLE, US1_DIS, US2_DIS);
+    LINE_ANGLE = LS.read(0); LINE_MAG = LS.read(3);
+    if(LINE_ANGLE != double(NaN)){
+        VECTOR_ANGLE = fmod(LINE_ANGLE + 180.0, 360.0);
+        if(IR_ANGLE != double(NaN)){
+            double diff = fmod(IR_ANGLE - LINE_ANGLE + 360.0, 360.0);
+            if(fabs(diff) <= 90.0) VECTOR_ANGLE += diff;
+            else VECTOR_ANGLE += 90.0 * (diff/fabs(diff));
+            VECTOR_MAG = LINE_MAG;
+        }
+    }
+    else if(IR_ANGLE != double(NaN)){
+        VECTOR_ANGLE = IR_ANGLE;
+        VECTOR_MAG = 1.0;
     }
     else{
-        if(dis2 < MIN_DIS) vectorControl(-0.5);
-        else if(dis2 > MAX_DIS) vectorControl(0.75);
-        else vectorControl(1.0);
+        
+    }
+    vectorControl(VECTOR_ANGLE, VECTOR_MAG);
+}
+
+#endif
+
+//Staying within boundaries
+void lines(){
+    VECTOR_ANGLE = LINE_ANGLE + (LINE_ANGLE > 0 ? -1.0 : 1.0);
+    if(IR_ANGLE ) VECTOR_ANGLE = (VECTOR_ANGLE + IR_ANGLE) / 2.0;
+    VECTOR_MAG = LINE_MAG;
+}
+
+//Returning when no ball detected
+void comeback(){
+    vectorControl(1.0);
+}
+
+//Returning when no ball is detected with US - WIP heavy testing required
+void usComeback(){
+    if(US1_DIS < US2_DIS){
+        if(US1_DIS < MIN_DIS) vectorControl(0.5, 0.8);
+        else if(dis1 > MAX_DIS) vectorControl(-0.75, 1.0);
+        else vectorControl(1.0, 0.8);
+    }
+    else{
+        if(US2_DIS < MIN_DIS) vectorControl(-0.5, 0.8);
+        else if(US2_DIS > MAX_DIS) vectorControl(0.75, 1.0);
+        else vectorControl(1.0, 0.8);
     }
 }
 
 //Ball tracking
 void ball(){
-    if(readLines()){
-        line();
-        return;
-    }
-    //double angle = IR.read(1);
-    if(angle == double(NaN)) comeback();
-    else{
-        if(angle > 60.0) angle += 30.0;
-        else if(angle < -60.0) angle -= 30.0;
-        vectorControl(degToDec(angle));
-    }
+    double angle = decToDeg(IR_ANGLE);
+    if(angle > 60.0) angle += 30.0;
+    else if(angle < -60.0) angle -= 30.0;
+    vectorControl(degToDec(angle), 1.0);
 }
 
 //Simple orientation
 void orientation(){
-    //double angle = Comp.read(1);
-    rotate(int(angle * (KPF - KPI) + (angle / fabs(angle)) * KPI));
+    rotate(int(IR_ANGLE * (KPF - KPI) + (IR_ANGLE/fabs(IR_ANGLE)) * KPI));
 }
-*/
-#else
-
- 
-
-#endif
