@@ -6,7 +6,7 @@
 #define defs_h
 
 //General behaviour (0: master, 1: slave)
-#define ROBOT_ID 0
+#define ROBOT_ID 1
 
 //-----------Libraries and definitions-----------
 
@@ -137,7 +137,7 @@ class I2C{
         I2C(int id, int ADDRESS, int MSG_LENGTH);
         void init();
         void parseMsg(String str);
-        int requestMsg();
+        void requestMsg();
         double read(String str, int mode);
         void getInfo(int &IR, int &COMP, int &US1, int &US2);
         void debug();
@@ -162,8 +162,6 @@ class Wireless{
 
 #else
 
-void I2CsendMsg();
-
 //Slave I2C communications class
 class I2C{
     private:
@@ -173,7 +171,7 @@ class I2C{
     public:
         I2C(int id, int ADDRESS, int MSG_LENGTH);
         void init();
-        void update(int I2C_IR, int I2C_COMP, int I2C_US1, int I2C_US2);
+        void update(int I2CIR, int I2CCOMP, int I2CUS1, int I2CUS2);
         static void sendMsg();
         void debug();
 };

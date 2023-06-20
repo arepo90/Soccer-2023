@@ -8,9 +8,9 @@ void globalInit(int mode){
     Serial.println("Tacos ");
     if(mode == 1 || mode == 4){
         if(ROBOT_ID == 0) Wire.begin();
-        else Wire.begin(COMMS_ADDRESS);
-        while(Wire.available() > 0){
-            Wire.read();
+        else{
+            Wire.begin(COMMS_ADDRESS);
+            Comms.init();
         }
     }
     #if ROBOT_ID == 0

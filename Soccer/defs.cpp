@@ -5,7 +5,7 @@
 #include "defs.h"
 
 WLmsg WLMSG;
-int I2C_IR, I2C_COMP, I2C_US1, I2C_US2;
+int I2C_IR = 1, I2C_COMP = 2, I2C_US1 = 3, I2C_US2 = 4;
 
 //---------------General functions---------------
 
@@ -267,12 +267,6 @@ I2C::I2C(int id, int ADDRESS, int MSG_LENGTH){
 
 #if ROBOT_ID == 0
 
-//Initialize I2C Slave <-> Master communications
-void I2C::init(){
-    if(this->requestMsg() != 0) Serial.println("Problem in I2C I2C");
-    else Serial.println("MCU <-> MCU I2C check complete");
-}
-
 //Translates byte array message into variables
 void I2C::parseMsg(String str){
     for(int i = 0; i < MSG_LENGTH; i++){
@@ -302,19 +296,17 @@ void I2C::parseMsg(String str){
 }
 
 //Requests message from I2C Slave
-int I2C::requestMsg(){
+void I2C::requestMsg(){
     String msg = "";
     Wire.beginTransmission(ADDRESS);
-    Wire.write(0x00);
+    Wire.write(0);
     Wire.endTransmission();
     Wire.requestFrom(ADDRESS, MSG_LENGTH);
-    for(int i = 0; i < MSG_LENGTH; i++){
+    while(Wire.available()){
         char temp = Wire.read();
         msg += S(temp);
     }
-    if(Wire.available()) return -1;
     parseMsg(msg);
-    return 0;
 }
 
 //Outputs desired info from buffer ("IR", "COMP", "US")
@@ -405,11 +397,22 @@ void I2C::init(){
     Wire.onRequest(this->sendMsg);
 }
 
+void I2C::update(int I2CIR, int I2CCOMP, int I2CUS1, int I2CUS2){
+    I2C_IR = I2CIR;
+    I2C_COMP = I2CCOMP;
+    I2C_US1 = I2CUS1;
+    I2C_US2 = I2CUS2;
+}
+
 //Handler for sending I2C messages to master
 void I2C::sendMsg(){
     char buf[21];
     sprintf(buf, "SI%03dXC%03dXU%03dXu%03dE", I2C_IR, I2C_COMP, I2C_US1, I2C_US2);
-    Wire.write(buf);
+    byte msg[21];
+    for(int i = 0; i < 21; i++){
+        msg[i] = (byte)buf[i];
+    }
+    Wire.write(msg, sizeof(msg));
 }
 
 #endif

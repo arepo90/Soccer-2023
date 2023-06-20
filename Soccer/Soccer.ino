@@ -1,19 +1,22 @@
 /*
-    Main code v2.0 early 4 - 19/06/2023 - Soccer 2023
+    Main code v2.0 early 6 - 19/06/2023 - Soccer 2023
     by Esteban Martinez & GPT-4
 
     RoboCup version
-    Unstable, won't compile (probably)
+    Unstable, very likely to break or just don't work
 
     *NEW*
     IR SENSOR WORKS LETS GOOOOO (Should test with different parameters)
+    I2C COMMS WORK WITH CLASSES LETS GOOOOO
+    DUAL CORE WORKS LETS GOOOOO (I think, I didn't test it a lot, will 
+    prob need delays or something to stop watchdog or whatever crashed it)
     Robot behaviour is now modified through #define's in defs.h
 
     *TODO*
     Modify ROBOT_ID and include a gk/gs #define
     Check that comms functions work with classes
     Rewrite gp and helper functions
-    Set up two cores and according tasks
+    Test dual core functionality and scheme what goes where and when
 */
 
 #include "defs.h"
@@ -70,7 +73,7 @@ int IR_PINS[] = {2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 15, 14, 13, 1, 0};
 #define IR_DELAY 5
 
 //I2C Slave address for ESP <-> ESP communications
-#define COMMS_ADDRESS 69
+#define COMMS_ADDRESS 9
 
 //Motor powers
 #define POW1 60
@@ -91,7 +94,7 @@ uint8_t WL_ADDRESS[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
 //---------------Hardware classes declarations---------------
 
-//I2C Comms(0, COMMS_ADDRESS, 21);
+I2C Comms(0, COMMS_ADDRESS, 21);
 
 #if ROBOT_ID == 0
 
@@ -125,20 +128,31 @@ Infrared IR(1, IR_PINS, IR0, IR1, IR2, IR3, IR_IN, IR_SAMPLES, IR_DELAY);
 
 //---------------Main code---------------
 
+int a = 0, b = 0, c = 0, d = 0;
+
 void primary_code(void *pvParameters){
     while(1){
-
+        Comms.update(a, b, c, d);
+        delay(1);
     }
 }
 
 void secondary_code(void *pvParameters){
     while(1){
-
+        a += 1;
+        b += 2;
+        c += 3;
+        d += 4;
+        a = a % 999;
+        b = b % 999;
+        c = c % 999;
+        d = d % 999;
+        Serial.println(S(a) + " " + S(b) + " " + S(c) + " " + S(d));
     }
 }
 
 void setup(){
-    globalInit(0);
+    globalInit(1);
     xTaskCreatePinnedToCore(primary_code, "primary", 10000, NULL, 1, &primary, 0);
     xTaskCreatePinnedToCore(secondary_code, "secondary", 10000, NULL, 1, &secondary, 1);
     Serial.println("4 pesos");
