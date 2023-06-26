@@ -1,11 +1,11 @@
 
 # Soccer 2023
 
-Creation date: Feb 8
+Creation date: 8/02/2023
 
 First stable version: Mar 2
 
-Final version: TBD
+Current version: (RoboCup 2023) 26/06/2023 - WIP
 
 # Documentation
 The following is a (semi) thorough explanation of the logic and reasoning behind the code in this repository, made for the category of **Robocup Junior, Soccer Lightweight**. 
@@ -16,36 +16,34 @@ Sensors may have different ways to be read or types of data that they return, th
 
 All objects are initialised through their constructors at the start of the program, with their main data as arguments, however, certain sensors require further actions or measurements before they can be used. In general, all objects have a private **ID** to differentiate them from similar objects, as well as **debug()** methods that output all relevant information to the *Serial monitor*.
 
-In general, if a varibale is in all-caps, it refers to an object's private variable, otherwise, it is most likely local.
+In general, if a varibale is in all-caps, it refers to an object's private variable, otherwise, it is most likely from a global #define.
 ### Motors
-Each motor is controlled by three pins, an **Enable (EN)** and two **Pulse width modulation (PWM)** pins. For the motor to be active, the **EN** pin must be set to a digital *HIGH*, while only one of the **PWM** pins must have a positive analog power (1 -> 255), with the other set at 0. To change the direction of turn, the **PWM** pins must be swapped.
+In the attacker, each motor is controlled by three pins, a digital **Enable (EN)** and two **Pulse width modulation (PWM)** pins. For the motor to be active, the **EN** pin must be set to a digital *HIGH*, while only one of the **PWM** pins must have a positive analog power (1 -> 255), with the other set at 0. To change the direction of turn, the **PWM** pins must be swapped. In our current design, the EN pins are all routed to VCC (i.e., to a digital *HIGH*), meaning there is no need to use them in the program, therefore, only the PWM pins are used.
 
-Each motor is treated as a different object, called M1, M2, M3 and M4, starting with the bottom left, going clockwise. When each object is constructed, the corresponding pins are set as *outputs* and the private pin numbers are defined. In addition to this, a **Default Power (defPow)** is set for each motor, which will serve as the the base speed. All pins and powers can be changed in the *#define* section at the start of the program.
+For the defender, each motor is also controlled by three pins, this time a single **PWM** and two digital **Direction (DIR)** pins. For the motor to be active, the **PWM** must have a positive analog power (1 -> 255), and only one of the **DIR** pins must be set to *HIGH* with the other at *LOW*. To change the direction of turn, the **DIR** pins must be swapped.
 
-The main method of the motor class is **move(int Pow)**. This takes an integer as an argument (-255 -> 255), and sets the motors to move at the power given as the argument. Note that the power can be negative, in which case the method swaps the **PWM** pins to invert the direction of turn, in addition, several checks exist to ensure a power does not overflow. A positive **Pow** argument makes the motors rotate clockwise. Every call to this method automatically updates the internal **POW** of the motor for further use.
+Each motor is treated as a different object, called M1, M2, M3 and M4, starting with the bottom left, going clockwise. When each object is constructed, the corresponding pins are set as *outputs* and the private pin numbers are defined. In addition to this, a **Default Power (defPow)** is set for each motor, which will serve as the the base speed. All pins and powers can be changed in the *#define* section at the start of the program. Since all operations are handled internally by the constructor of the class, programming the attacker or defender is of no difference to the end user.
 
-The method of **update(int Pow)**, as the name suggests, is used to update the current **POW** of the motor. It is usually used in combination with **getPow()** to gently modify the power of the motor. Note that checks are in place to ensure that the new power does not overflow.
+The main method of the motor class is **move(int Pow)**. This takes an integer as an argument (-255 -> 255), and sets the motors to move at the power given as the argument. Note that the power can be negative, in which case the method swaps the according pins to invert the direction of turn, in addition, several checks exist to ensure a power does not overflow. A positive **Pow** argument makes the motors rotate clockwise. Every call to this method automatically updates the internal **POW** of the motor for further use.
 
-An underused function is that of **brake(int force)**, due to its limitations while implementing it with the rest of the code. This method takes the current power, and briefly rotates the motor in the opposite direction in order to counteract inertia. It uses the **delay()** function with milliseconds, which makes it suboptimal.
+The method of **update(int Pow)**, as the name suggests, is used to update the current **POW** of the motor. Note that checks are in place to ensure that the new power does not overflow.
+
+An underused function is that of **brake(int force)**, due to its limitations while implementing it with the rest of the code. This method takes the current power, and briefly rotates the motor in the opposite direction in order to counteract innertia. It uses the **delay()** function with milliseconds, which makes it suboptimal.
 
 **test(int Pow)** can be called to test the motor. It will move with the power indicated in the argument for 1 second, then it will change directions with the same power for another second.
 
 ### Light sensors
-Each sensor block is treated as a different object, meaning that every object is in charge of two analog pins. They are called L1, L2, L3 and L4, starting from the back and moving counterclockwise. They each output an 8-byte number (0 -> 1024) that represents the current level of luminosity being received by the photoresistor. In this case, a simple threshold is used to determine when a line is touched.
+The whole sensor block is treated as a single object, meaning that all pins are limits are stored in arrays, starting at the front and moving clockwise. They each output an 12-bit number (0 -> 4095) that represents the current level of luminosity being received by the photoresistor. In this case, a simple threshold is used to determine when a line is touched.
 
-Along with the constructors, there is a special boolean argument (arg1) that is used to determine the source of the threshold limit. A *false* value will take the limits from the *#define* section at the start, while a *true* value will take them from the Arduino's EEPROM memory through the **memRead()** and **memSave()** helper functions (documented later in the text).
-
-As mentioned before, the **setLim(int LIM_A, int LIM_B)** method is only triggered when the special argument is *false*, thus taking the limits from the *#define* section and saving the values in the EEPROM memory. Note that this will overwrite any values previously stored.
-
-The **read()** method outputs a state depending on the detection level. If no lines are detected, it returns 0. If only the outer sensor detects a line, it returns 1. If only the inner sensor detects a line, it returns 2. Finally, if both sensors detect a line, it returns 3. 
+The **read()** method outputs an angle depending on the sensor detection. If no lines are detected, it returns NaN, otherwise, a vector sum is performed to determine the angle of detection (0 -> 360);
 
 ### Ultrasonic sensors
-Each sensor requires a *trigger* and *echo* pin, as well as a *timeout*. The library of "Ultrasonic.h" is used to handle measurements. When the US objects are constructed, each carries a sub-object from the library, which is then initialised using the arguments. When a measurement is made through the **read()** method, a call is made to the secondary object.
+Each sensor requires a *trigger* and *echo* pin, as well as a *timeout*. The library of "NewPing.h" is used to handle measurements. When the US objects are constructed, each carries a sub-object from the library, which is then initialised using the arguments. When a measurement is made through the **read()** method, a call is made to the secondary object.
 
-Ultrasonic sensors are highly unreliable, and thus several measures have been taken to mitigate their impact. The timeout can be modified to increase the reading distance of the sensor, although "false positives" still exist, thus an average or such function should be made to handle these cases. Currently WIP.
+Ultrasonic sensors are highly unreliable, so several samples are taken for each measurement to ensure reliability.
 
 ### Compass
-The compass sensor requires a secondary initialisation after the object is constructed, which is only called when the **globalInit()** argument is 1 or 3 (documented later in the text). The primary initialisation sets the pins, addresses and limits, while the secondary starts I2C bus to start communication with the sensor.
+The compass sensor requires a secondary initialisation after the object is constructed, which is only called when the **globalInit()** argument is 2 or 4 (documented later in the text). The primary initialisation sets the pins, addresses and limits, while the secondary starts I2C bus to start communication with the sensor.
 
 The **init()** starts the **Wire** communication by sending a blank package to the sensor's address. After the initial handshake is performed, a measurement is made to set the *OFFSET* of the compass. This is only done at the start of the program to get the fake north we will be following.
 
@@ -53,14 +51,15 @@ The **read(int mode)** is the main method of this class, and it's used to measur
 
 This class also carries secondary getters and setters for the *OFFSET*, as well as the **north()** helper method to determine if the compass is currently pointing north. Note that this is not the magnetic north, but rather the initial direction of the robot.
 
-### Infrared Seeker
+### Infrared Sensor
 
-Similarly to the compass sensor, the IRSeeker requires I2C communication, and thus is initialised after its construction if the **globalInit()** arguments are 2 or 3. The primary initialisation sets the pins, addresses and limits, while the secondary starts I2C bus to start communication with the sensor.
+In the case of the attacker, the IR Sensor consists of a ring of 16 digital receivers, each connected to a 16-channel multiplexor that communicates with the ESP32 through 4 *OUTPUT* pins and a single *INPUT* pin.
 
-The **init()** method starts the **Wire** communication by sending a blank package to the sensor's address and awaiting for a response, thus completing the handshake.
+To perform a reading, several hundred samples are taken from each receiver, saving the amount of times the ball is detected. At the end of the measurements, a NaN is returned if the ball was not detected, otherwise, a vector sum is performed by determining the X and Y components of each receiver's readings. As you might think, reading this sensor is not a fast operation, so measures have been put in place to minimize the delay caused by this.
+
+For the defender, a HiTechnic IR Seeker is used, that requires I2C communications, with its corresponding **init()** function called at **globalInit()** 2 and 4.
 
 The **read(int mode)** is also the main method of this class, and is used to know the current sector the IR ball is in. The mode determines if the result is sent as the sector (0 -> 9), or as the angle of the sector (-120 -> 120). Note that, either way, the resolution of the result is 30 degrees, and if no ball is found, the second mode returns NaN. The information is requested by sending a message through the **Wire** to the sensor's address, and awaiting for a 6-byte response, although only the first byte represents the direction of the ball.
-
 
 ## Main Functions
 The combination of methods and objects are used in separate functions to perform specific tasks.
